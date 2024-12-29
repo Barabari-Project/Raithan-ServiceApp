@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:raithan_serviceapp/Onboarding/registration.dart';
+import 'package:raithan_serviceapp/Onboarding/Presentation/registration.dart';
 
 void main() {
   runApp(const MyApp());
