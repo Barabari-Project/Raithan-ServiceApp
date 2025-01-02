@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:raithan_serviceapp/Onboarding/Data/Repository/onboarding_repository.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
 class OtpPage extends StatefulWidget {
   final TextEditingController otpController;
   final GlobalKey<FormState> formKey;
-
-  const OtpPage({
-    super.key,
-    required this.otpController,
-    required this.formKey,
-  });
+  final String phone;
+  const OtpPage(
+      {super.key,
+      required this.otpController,
+      required this.formKey,
+      required this.phone});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -19,9 +20,12 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   late Timer _timer;
-  int _remainingSeconds = 10; // Countdown timer in seconds
+  int _remainingSeconds = 30; // Countdown timer in seconds
   bool timerRunning = true;
 
+  final OnboardingRepository _onboardingRepository = OnboardingRepository(
+    baseUrl: 'https://backend.barabaricollective.org',
+  );
   @override
   void initState() {
     super.initState();
@@ -78,7 +82,7 @@ class _OtpPageState extends State<OtpPage> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "+91 8141350732",
+                      "+91 ${widget.phone}",
                       style: robotoBold.copyWith(
                         color: black,
                         fontSize: 24,
@@ -136,9 +140,29 @@ class _OtpPageState extends State<OtpPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (!timerRunning) {
+                          // make an api call
+                          try {
+                            final response = await _onboardingRepository
+                                .registerMobileNumber(
+                              widget.phone,
+                              "/raithan/api/service-providers/onboard/user/mobile",
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('Success: ${response['message']}')),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
                           startTimer();
+                          setState(() {
+                            timerRunning = true;
+                          });
                         }
                       },
                       child: Text(

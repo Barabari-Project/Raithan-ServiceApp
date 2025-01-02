@@ -1,42 +1,32 @@
-import 'dart:io';
-
 import 'package:dotted_line/dotted_line.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:raithan_serviceapp/Onboarding/Data/Repository/onboarding_repository.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/otpPage.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/personalDetailsPage.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/phonePage.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/login.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/home.dart';
 
-class Registration extends StatefulWidget {
-  const Registration({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Registration> createState() => _RegistrationState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegistrationState extends State<Registration> {
+class _LoginScreenState extends State<LoginScreen> {
   int currentPhase = 0;
+  bool isLoading = false;
+
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _imageController = TextEditingController();
   final GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _otpFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _detailFormKey = GlobalKey<FormState>();
 
   final OnboardingRepository _onboardingRepository = OnboardingRepository(
     baseUrl: 'https://backend.barabaricollective.org',
   );
-
-  bool isLoading = false; // Add loading state
 
   void _showLoading() {
     setState(() {
@@ -52,11 +42,11 @@ class _RegistrationState extends State<Registration> {
 
   void _submitPhone() async {
     if (_phoneFormKey.currentState?.validate() ?? false) {
-      _showLoading(); // Show loading indicator
+      _showLoading();
       try {
         final response = await _onboardingRepository.registerMobileNumber(
           _phoneController.text,
-          "/raithan/api/service-providers/onboard/user/mobile",
+          "/raithan/api/service-providers/login",
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -68,14 +58,13 @@ class _RegistrationState extends State<Registration> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong. Please Try Again.")),
+          const SnackBar(
+              content: Text("Something went wrong. Please Try Again.")),
         );
       } finally {
-        _hideLoading(); // Hide loading indicator
+        _hideLoading();
       }
     } else {
-      _hideLoading(); // Hide loading indicator
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid Phone number')),
       );
@@ -89,7 +78,7 @@ class _RegistrationState extends State<Registration> {
         final response = await _onboardingRepository.verifyOtp(
           _phoneController.text,
           _otpController.text,
-          "/raithan/api/service-providers/onboard/user/verify-otp",
+          "/raithan/api/service-providers/login/verify-otp",
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -98,35 +87,6 @@ class _RegistrationState extends State<Registration> {
 
         setState(() {
           currentPhase = 2;
-        });
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong. Please Try Again.")),
-        );
-      } finally {
-        _hideLoading();
-      }
-    } else {
-      _hideLoading(); // Hide loading indicator
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid OTP')),
-      );
-    }
-  }
-
-  void _submitDetails() async {
-    if (_detailFormKey.currentState?.validate() ?? false) {
-      _showLoading();
-      try {
-        await _onboardingRepository.uploadProfile(
-          image: File(_imageController.text),
-          firstName: _firstNameController.text,
-          lastName: _lastNameController.text,
-        );
-
-        setState(() {
-          currentPhase = 3;
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -134,16 +94,15 @@ class _RegistrationState extends State<Registration> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong. Please Try Again.")),
+          const SnackBar(
+              content: Text("Something went wrong. Please Try Again.")),
         );
       } finally {
         _hideLoading();
       }
     } else {
-      _hideLoading(); // Hide loading indicator
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter valid Personal Details')),
+        const SnackBar(content: Text('Please enter a valid OTP')),
       );
     }
   }
@@ -171,40 +130,10 @@ class _RegistrationState extends State<Registration> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'Register',
+                      'Login',
                       style: robotoBold.copyWith(
                         color: white,
                         fontSize: 36,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Already Registered? ',
-                        style: robotoNormal.copyWith(
-                          color: white,
-                          fontSize: 10,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: 'Login',
-                            style: robotoBold.copyWith(
-                              color: Colors.blue, // Different color for "Login"
-                              fontSize: 10,
-                              decoration: TextDecoration
-                                  .underline, // Underline for emphasis
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()),
-                                );
-                              },
-                          ),
-                        ],
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -251,40 +180,6 @@ class _RegistrationState extends State<Registration> {
                           label: 'OTP',
                           currentPhase: currentPhase,
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 30.0,
-                              right: 20,
-                            ),
-                            child: currentPhase == 2
-                                ? const DottedLine(
-                                    dashColor: Colors.green,
-                                    dashLength: 3.0,
-                                    dashGapLength: 4.0,
-                                    lineThickness: 2.0,
-                                  )
-                                : currentPhase == 1 || currentPhase == 0
-                                    ? const DottedLine(
-                                        dashColor: Colors.grey,
-                                        dashLength: 3.0,
-                                        dashGapLength: 4.0,
-                                        lineThickness: 2.0,
-                                      )
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ),
-                          ),
-                        ),
-                        StepItem(
-                          stepNumber: 3,
-                          label: 'Details',
-                          currentPhase: currentPhase,
-                        ),
                       ],
                     ),
                   ],
@@ -313,29 +208,22 @@ class _RegistrationState extends State<Registration> {
                         ),
                       ),
                       child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 50,
-                            left: 10,
-                            right: 10,
-                          ),
-                          child: (currentPhase == 0)
-                              ? PersonalDetailsPage(
-                                  firstNameController: _firstNameController,
-                                  lastNameController: _lastNameController,
-                                  dobController: _dobController,
-                                  imageController: _imageController,
-                                  formKey: _detailFormKey,
-                                )
-                              : (currentPhase == 1)
-                                  ? OtpPage(
-                                      phone: _phoneController.text,
-                                      otpController: _otpController,
-                                      formKey: _otpFormKey,
-                                    )
-                                  : PhonePage(
-                                      phoneController: _phoneController,
-                                      formKey: _phoneFormKey,
-                                    )),
+                        padding: const EdgeInsets.only(
+                          top: 50,
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: (currentPhase == 0)
+                            ? PhonePage(
+                                phoneController: _phoneController,
+                                formKey: _phoneFormKey,
+                              )
+                            : OtpPage(
+                                phone: _phoneController.text,
+                                otpController: _otpController,
+                                formKey: _otpFormKey,
+                              ),
+                      ),
                     ),
                   ),
                 ),
@@ -378,10 +266,8 @@ class _RegistrationState extends State<Registration> {
                             setState(() {
                               if (currentPhase == 0) {
                                 _submitPhone();
-                              } else if (currentPhase == 1) {
-                                _submitOtp();
                               } else {
-                                _submitDetails();
+                                _submitOtp();
                               }
                             });
                           },

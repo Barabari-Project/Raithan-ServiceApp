@@ -16,32 +16,39 @@ class DOBInputField extends StatefulWidget {
 }
 
 class _DOBInputFieldState extends State<DOBInputField> {
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
+  Future<void> _selectYear(BuildContext context) async {
+    final DateTime currentDate = DateTime.now();
+    DateTime selectedDate = currentDate;
+
+    await showDialog(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.black, // Header background color
-              onPrimary: Colors.white, // Header text color
-              onSurface: Colors.black, // Body text color
+      barrierDismissible: true, // Allows tapping outside to close
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        backgroundColor: Colors.white, // Ensure clean background
+        elevation: 0,
+        child: SizedBox(
+          height: 300,
+          child: Material(
+            color: Colors.transparent, // Remove shadow overlay
+            child: YearPicker(
+              firstDate: DateTime(1900),
+              lastDate: currentDate,
+              initialDate: currentDate,
+              selectedDate: selectedDate,
+              onChanged: (DateTime date) {
+                setState(() {
+                  widget.controller.text = "${date.year}";
+                });
+                Navigator.pop(context);
+              },
             ),
           ),
-          child: child!,
-        );
-      },
+        ),
+      ),
     );
-
-    if (pickedDate != null) {
-      setState(() {
-        widget.controller.text =
-            "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
-      });
-    }
   }
 
   @override
@@ -55,7 +62,7 @@ class _DOBInputFieldState extends State<DOBInputField> {
           .titleMedium!
           .copyWith(color: Colors.black),
       decoration: InputDecoration(
-        label: const Text("Date of Birth"),
+        label: const Text("Year of Birth"),
         labelStyle:
             Theme.of(context).textTheme.titleSmall!.copyWith(color: grey),
         border: OutlineInputBorder(
@@ -76,7 +83,7 @@ class _DOBInputFieldState extends State<DOBInputField> {
         ),
       ),
       validator: widget.validator,
-      onTap: () => _selectDate(context),
+      onTap: () => _selectYear(context),
     );
   }
 }

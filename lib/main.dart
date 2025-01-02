@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:raithan_serviceapp/Onboarding/Presentation/login.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/registration.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Registration(),
+      home: const Registration(),
     );
   }
 }
