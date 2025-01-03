@@ -1,10 +1,12 @@
 import 'package:dotted_line/dotted_line.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:raithan_serviceapp/Onboarding/Data/Repository/onboarding_repository.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/otpPage.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/phonePage.dart';
+import 'package:raithan_serviceapp/Onboarding/Presentation/registration.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/home.dart';
 
@@ -47,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final response = await _onboardingRepository.registerMobileNumber(
           _phoneController.text,
           "/raithan/api/service-providers/login",
+          true,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -57,10 +60,20 @@ class _LoginScreenState extends State<LoginScreen> {
           currentPhase = 1;
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Something went wrong. Please Try Again.")),
-        );
+        if (e.toString() == "Exception: new") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Registration(
+                      phone: _phoneController.text,
+                    )),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Something went wrong. Please Try Again.")),
+          );
+        }
       } finally {
         _hideLoading();
       }
@@ -136,6 +149,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 36,
                       ),
                     ),
+                    const SizedBox(height: 5),
+                    RichText(
+                      text: TextSpan(
+                        text: 'New User? ',
+                        style: robotoNormal.copyWith(
+                          color: white,
+                          fontSize: 10,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Register',
+                            style: robotoBold.copyWith(
+                              color: Colors.blue, // Different color for "Login"
+                              fontSize: 10,
+                              decoration: TextDecoration
+                                  .underline, // Underline for emphasis
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Registration()),
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+
                     const SizedBox(height: 30),
                     // Stepper Section
                     Row(

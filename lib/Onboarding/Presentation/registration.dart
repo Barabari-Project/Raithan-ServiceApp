@@ -14,7 +14,11 @@ import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/home.dart';
 
 class Registration extends StatefulWidget {
-  const Registration({super.key});
+  final String? phone;
+  const Registration({
+    super.key,
+    this.phone,
+  });
 
   @override
   State<Registration> createState() => _RegistrationState();
@@ -28,6 +32,7 @@ class _RegistrationState extends State<Registration> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _imageController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
   final GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _otpFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _detailFormKey = GlobalKey<FormState>();
@@ -57,6 +62,7 @@ class _RegistrationState extends State<Registration> {
         final response = await _onboardingRepository.registerMobileNumber(
           _phoneController.text,
           "/raithan/api/service-providers/onboard/user/mobile",
+          false,
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -68,7 +74,8 @@ class _RegistrationState extends State<Registration> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong. Please Try Again.")),
+          const SnackBar(
+              content: Text("Something went wrong. Please Try Again.")),
         );
       } finally {
         _hideLoading(); // Hide loading indicator
@@ -101,7 +108,8 @@ class _RegistrationState extends State<Registration> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong. Please Try Again.")),
+          const SnackBar(
+              content: Text("Something went wrong. Please Try Again.")),
         );
       } finally {
         _hideLoading();
@@ -123,6 +131,8 @@ class _RegistrationState extends State<Registration> {
           image: File(_imageController.text),
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
+          year: _dobController.text,
+          gender: _genderController.text,
         );
 
         setState(() {
@@ -134,13 +144,14 @@ class _RegistrationState extends State<Registration> {
         });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong. Please Try Again.")),
+          const SnackBar(
+              content: Text("Something went wrong. Please Try Again.")),
         );
       } finally {
         _hideLoading();
       }
     } else {
-      _hideLoading(); // Hide loading indicator
+      _hideLoading();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter valid Personal Details')),
@@ -149,7 +160,19 @@ class _RegistrationState extends State<Registration> {
   }
 
   @override
+  void initState() {
+    if (widget.phone != null) {
+      setState(() {
+        _phoneController.text = widget.phone!;
+      });
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
       backgroundColor: black,
       body: Stack(
@@ -157,139 +180,140 @@ class _RegistrationState extends State<Registration> {
           Column(
             children: [
               // Header Section
-
-              Container(
-                padding: const EdgeInsets.only(top: 60, left: 20, right: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome',
-                      style: robotoNormal.copyWith(
-                        color: Colors.white38,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Register',
-                      style: robotoBold.copyWith(
-                        color: white,
-                        fontSize: 36,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Already Registered? ',
+              if (!(isKeyboardVisible && currentPhase == 2))
+                Container(
+                  padding: const EdgeInsets.only(top: 60, left: 20, right: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome',
                         style: robotoNormal.copyWith(
-                          color: white,
-                          fontSize: 10,
+                          color: Colors.white38,
                         ),
-                        children: [
-                          TextSpan(
-                            text: 'Login',
-                            style: robotoBold.copyWith(
-                              color: Colors.blue, // Different color for "Login"
-                              fontSize: 10,
-                              decoration: TextDecoration
-                                  .underline, // Underline for emphasis
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Register',
+                        style: robotoBold.copyWith(
+                          color: white,
+                          fontSize: 36,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      RichText(
+                        text: TextSpan(
+                          text: 'Already Registered? ',
+                          style: robotoNormal.copyWith(
+                            color: white,
+                            fontSize: 10,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Login',
+                              style: robotoBold.copyWith(
+                                color:
+                                    Colors.blue, // Different color for "Login"
+                                fontSize: 10,
+                                decoration: TextDecoration
+                                    .underline, // Underline for emphasis
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginScreen()),
+                                  );
+                                },
                             ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()),
-                                );
-                              },
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      // Stepper Section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          StepItem(
+                            stepNumber: 1,
+                            label: 'Phone',
+                            currentPhase: currentPhase,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 30.0,
+                                right: 20,
+                              ),
+                              child: currentPhase == 1
+                                  ? const DottedLine(
+                                      dashColor: Colors.green,
+                                      dashLength: 3.0,
+                                      dashGapLength: 4.0,
+                                      lineThickness: 2.0,
+                                    )
+                                  : currentPhase == 0
+                                      ? const DottedLine(
+                                          dashColor: Colors.grey,
+                                          dashLength: 3.0,
+                                          dashGapLength: 4.0,
+                                          lineThickness: 2.0,
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                        ),
+                            ),
+                          ),
+                          StepItem(
+                            stepNumber: 2,
+                            label: 'OTP',
+                            currentPhase: currentPhase,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 30.0,
+                                right: 20,
+                              ),
+                              child: currentPhase == 2
+                                  ? const DottedLine(
+                                      dashColor: Colors.green,
+                                      dashLength: 3.0,
+                                      dashGapLength: 4.0,
+                                      lineThickness: 2.0,
+                                    )
+                                  : currentPhase == 1 || currentPhase == 0
+                                      ? const DottedLine(
+                                          dashColor: Colors.grey,
+                                          dashLength: 3.0,
+                                          dashGapLength: 4.0,
+                                          lineThickness: 2.0,
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                        ),
+                            ),
+                          ),
+                          StepItem(
+                            stepNumber: 3,
+                            label: 'Details',
+                            currentPhase: currentPhase,
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    // Stepper Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        StepItem(
-                          stepNumber: 1,
-                          label: 'Phone',
-                          currentPhase: currentPhase,
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 30.0,
-                              right: 20,
-                            ),
-                            child: currentPhase == 1
-                                ? const DottedLine(
-                                    dashColor: Colors.green,
-                                    dashLength: 3.0,
-                                    dashGapLength: 4.0,
-                                    lineThickness: 2.0,
-                                  )
-                                : currentPhase == 0
-                                    ? const DottedLine(
-                                        dashColor: Colors.grey,
-                                        dashLength: 3.0,
-                                        dashGapLength: 4.0,
-                                        lineThickness: 2.0,
-                                      )
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ),
-                          ),
-                        ),
-                        StepItem(
-                          stepNumber: 2,
-                          label: 'OTP',
-                          currentPhase: currentPhase,
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 30.0,
-                              right: 20,
-                            ),
-                            child: currentPhase == 2
-                                ? const DottedLine(
-                                    dashColor: Colors.green,
-                                    dashLength: 3.0,
-                                    dashGapLength: 4.0,
-                                    lineThickness: 2.0,
-                                  )
-                                : currentPhase == 1 || currentPhase == 0
-                                    ? const DottedLine(
-                                        dashColor: Colors.grey,
-                                        dashLength: 3.0,
-                                        dashGapLength: 4.0,
-                                        lineThickness: 2.0,
-                                      )
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ),
-                          ),
-                        ),
-                        StepItem(
-                          stepNumber: 3,
-                          label: 'Details',
-                          currentPhase: currentPhase,
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: 30),
               // Dynamic Content Section
 
@@ -334,6 +358,7 @@ class _RegistrationState extends State<Registration> {
                                     lastNameController: _lastNameController,
                                     dobController: _dobController,
                                     imageController: _imageController,
+                                    genderController: _genderController,
                                     formKey: _detailFormKey,
                                   ),
                       ),

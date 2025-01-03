@@ -19,7 +19,7 @@ class OnboardingRepository {
   }
 
   Future<Map<String, dynamic>> registerMobileNumber(
-      String mobileNumber, String path) async {
+      String mobileNumber, String path, bool isLogin) async {
     final url = Uri.parse('$baseUrl$path');
     try {
       final response = await http.post(
@@ -34,6 +34,8 @@ class OnboardingRepository {
         return jsonDecode(response.body);
       } else if (response.statusCode == 400) {
         throw Exception('User is already in onboarding process');
+      } else if (isLogin && response.statusCode == 404) {
+        throw Exception('new');
       } else {
         throw Exception('Failed to register mobile number');
       }
@@ -76,6 +78,8 @@ class OnboardingRepository {
     required File image,
     required String firstName,
     required String lastName,
+    required String year,
+    required String gender,
   }) async {
     final url = Uri.parse(
         '$baseUrl/raithan/api/service-providers/onboard/user/profile');
@@ -87,6 +91,8 @@ class OnboardingRepository {
       request.headers['Authorization'] = 'Bearer $token';
       request.fields['firstName'] = firstName;
       request.fields['lastName'] = lastName;
+      request.fields['yearOfBirth'] = year;
+      request.fields['gender'] = gender;
       var imageFile = await http.MultipartFile.fromPath('img', image.path);
       request.files.add(imageFile);
       var response = await request.send();
