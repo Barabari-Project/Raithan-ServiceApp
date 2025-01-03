@@ -148,6 +148,7 @@ class _OtpPageState extends State<OtpPage> {
                                 .registerMobileNumber(
                               widget.phone,
                               "/raithan/api/service-providers/onboard/user/mobile",
+                              false,
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
