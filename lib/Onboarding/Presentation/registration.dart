@@ -313,29 +313,30 @@ class _RegistrationState extends State<Registration> {
                         ),
                       ),
                       child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 50,
-                            left: 10,
-                            right: 10,
-                          ),
-                          child: (currentPhase == 0)
-                              ? PersonalDetailsPage(
-                                  firstNameController: _firstNameController,
-                                  lastNameController: _lastNameController,
-                                  dobController: _dobController,
-                                  imageController: _imageController,
-                                  formKey: _detailFormKey,
-                                )
-                              : (currentPhase == 1)
-                                  ? OtpPage(
-                                      phone: _phoneController.text,
-                                      otpController: _otpController,
-                                      formKey: _otpFormKey,
-                                    )
-                                  : PhonePage(
-                                      phoneController: _phoneController,
-                                      formKey: _phoneFormKey,
-                                    )),
+                        padding: const EdgeInsets.only(
+                          top: 50,
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: (currentPhase == 0)
+                            ? PhonePage(
+                                phoneController: _phoneController,
+                                formKey: _phoneFormKey,
+                              )
+                            : (currentPhase == 1)
+                                ? OtpPage(
+                                    phone: _phoneController.text,
+                                    otpController: _otpController,
+                                    formKey: _otpFormKey,
+                                  )
+                                : PersonalDetailsPage(
+                                    firstNameController: _firstNameController,
+                                    lastNameController: _lastNameController,
+                                    dobController: _dobController,
+                                    imageController: _imageController,
+                                    formKey: _detailFormKey,
+                                  ),
+                      ),
                     ),
                   ),
                 ),
