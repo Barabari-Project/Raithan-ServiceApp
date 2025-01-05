@@ -11,6 +11,10 @@ class AppDimensions{
   static double cardDetailsPadding = width*0.01;
   static double dropDownMenuFullWidth = width*0.9;
 
+  static const double auth_screen_padding = 20;
+
+  static const double auth_screen_top_padding = 60;
+
   static const double regularFontSize = 16;
 
   static const double smallFontSize = 14;

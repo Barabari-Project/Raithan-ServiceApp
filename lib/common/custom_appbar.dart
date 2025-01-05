@@ -26,7 +26,7 @@ PreferredSizeWidget customAppBar(String title, BuildContext context,{TabBar? tab
         child: currentRoute==RouteName.profile ? GestureDetector(
           onTap: () {
             ProfileController profileController = Get.find();
-            profileController.isEditAllowed.value = !profileController.isEditAllowed.value;
+            profileController.allowEditProfileDetails();
           },
           child: const Icon(
             Icons.edit,
