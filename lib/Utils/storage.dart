@@ -1,22 +1,21 @@
 
-import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Storage{
-  static final storage = GetStorage();
 
-  static void writeData(String key,String value){
-    storage.write(key, value);
+  static Future<void> saveValue(String key,String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
   }
-  static String readData(String key){
-    return storage.read(key);
+
+  static Future<String?> getValue(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
   }
-  static bool isExist(String key){
-    return storage.hasData(key);
+
+  static Future<void> removeAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // This removes all stored key-value pairs
   }
-  static void removeData(String key){
-    storage.remove(key);
-  }
-  static void removeAllData(){
-    storage.erase();
-  }
+
 }

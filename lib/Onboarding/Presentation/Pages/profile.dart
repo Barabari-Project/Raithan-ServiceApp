@@ -72,7 +72,7 @@ class Profile extends GetView<ProfileController> {
                             onTap: () {
                               // Handle edit action
                               print('Edit profile clicked!');
-                              controller.showImageSourceDialog(context);
+                              controller.pickImage();
                             },
                             child: Container(
                               height: AppDimensions.width * 0.08,

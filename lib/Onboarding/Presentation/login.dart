@@ -8,6 +8,7 @@ import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/otpPage.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/phonePage.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/registration.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
+import 'package:raithan_serviceapp/constants/api_constants.dart';
 import 'package:raithan_serviceapp/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _otpFormKey = GlobalKey<FormState>();
 
   final OnboardingRepository _onboardingRepository = OnboardingRepository(
-    baseUrl: 'https://backend.barabaricollective.org',
+    baseUrl: APIConstants.baseUrl,
   );
 
   void _showLoading() {
@@ -42,14 +43,16 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _submitPhone() async {
+  void _submitPhone(BuildContext context) async {
     if (_phoneFormKey.currentState?.validate() ?? false) {
       _showLoading();
+
       try {
         final response = await _onboardingRepository.registerMobileNumber(
           _phoneController.text,
           "/raithan/api/service-providers/login",
           true,
+          context
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -60,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
           currentPhase = 1;
         });
       } catch (e) {
+
         if (e.toString() == "Exception: new") {
           Navigator.pushReplacement(
             context,
@@ -309,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             setState(() {
                               if (currentPhase == 0) {
-                                _submitPhone();
+                                _submitPhone(context);
                               } else {
                                 _submitOtp();
                               }

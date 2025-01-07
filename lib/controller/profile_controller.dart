@@ -1,9 +1,9 @@
 
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ProfileController extends GetxController {
 
@@ -25,12 +25,15 @@ class ProfileController extends GetxController {
 
   RxString profileImagePath = 'assets/images/farm-background.jpg'.obs;
 
-  Future<void> _pickImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: source);
-    if(pickedFile != null)
+  Future<void> pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+    );
+    if(result != null)
       {
-        profileImagePath.value = pickedFile.path;
+        profileImagePath.value = result.files.first.path!;
         isProfileImageUpdated.value = true;
       }
   }
@@ -48,33 +51,6 @@ class ProfileController extends GetxController {
   }
 
 
-  void showImageSourceDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a Photo'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Future<void> showYearPicker (BuildContext context) async
   {

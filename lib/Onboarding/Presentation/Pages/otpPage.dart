@@ -4,6 +4,8 @@ import 'package:pinput/pinput.dart';
 import 'package:raithan_serviceapp/Onboarding/Data/Repository/onboarding_repository.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
+import '../../../constants/api_constants.dart';
+
 class OtpPage extends StatefulWidget {
   final TextEditingController otpController;
   final GlobalKey<FormState> formKey;
@@ -24,7 +26,7 @@ class _OtpPageState extends State<OtpPage> {
   bool timerRunning = true;
 
   final OnboardingRepository _onboardingRepository = OnboardingRepository(
-    baseUrl: 'https://backend.barabaricollective.org',
+    baseUrl: APIConstants.baseUrl,
   );
   @override
   void initState() {
@@ -149,6 +151,7 @@ class _OtpPageState extends State<OtpPage> {
                               widget.phone,
                               "/raithan/api/service-providers/onboard/user/mobile",
                               false,
+                              context
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

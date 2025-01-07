@@ -33,80 +33,78 @@ class PersonalDetailsPage extends StatefulWidget {
 class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Form(
-          key: widget.formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Personal Details",
-                style: robotoBold.copyWith(
-                  color: black,
-                  fontSize: 20,
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Form(
+        key: widget.formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Personal Details",
+              style: robotoBold.copyWith(
+                color: black,
+                fontSize: 20,
               ),
-              sizedBox(),
-              CustomTextfield(
-                controller: widget.firstNameController,
-                type: TextInputType.name,
-                label: "First Name",
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your first name';
-                  }
-                  return null;
-                },
-              ),
-              sizedBox(),
-              CustomTextfield(
-                controller: widget.lastNameController,
-                type: TextInputType.name,
-                label: "Second Name",
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your second name';
-                  }
-                  return null;
-                },
-              ),
-              sizedBox(),
-              DOBInputField(
-                controller: widget.dobController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select your date of birth';
-                  }
-                  return null;
-                },
-              ),
-              sizedBox(),
-              DropdownTextField(
-                controller: widget.genderController,
-                label: "Select an Gender",
-                options: ['Male', 'Female', 'Other'],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select an option';
-                  }
-                  return null;
-                },
-              ),
-              sizedBox(),
-              ImagePickerField(
-                controller: widget.imageController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select an image';
-                  }
-                  return null;
-                },
-              ),
-              sizedBox(),
-            ],
-          ),
+            ),
+            sizedBox(),
+            CustomTextfield(
+              controller: widget.firstNameController,
+              type: TextInputType.name,
+              label: "First Name",
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your first name';
+                }
+                return null;
+              },
+            ),
+            sizedBox(),
+            CustomTextfield(
+              controller: widget.lastNameController,
+              type: TextInputType.name,
+              label: "Second Name",
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your second name';
+                }
+                return null;
+              },
+            ),
+            sizedBox(),
+            DOBInputField(
+              controller: widget.dobController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select your date of birth';
+                }
+                return null;
+              },
+            ),
+            sizedBox(),
+            DropdownTextField(
+              controller: widget.genderController,
+              label: "Select an Gender",
+              options: ['Male', 'Female', 'Other'],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select an option';
+                }
+                return null;
+              },
+            ),
+            sizedBox(),
+            ImagePickerField(
+              controller: widget.imageController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select an image';
+                }
+                return null;
+              },
+            ),
+            sizedBox(),
+          ],
         ),
       ),
     );

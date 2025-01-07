@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
 class ImagePickerField extends StatefulWidget {
@@ -19,45 +19,24 @@ class ImagePickerField extends StatefulWidget {
 
 class _ImagePickerFieldState extends State<ImagePickerField> {
   File? _selectedImage;
-  Future<void> _pickImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: source);
 
-    if (pickedFile != null) {
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+    );
+
+
+    if (result != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
-        widget.controller!.text = pickedFile.path;
+        _selectedImage = File(result.files.first.path!);
+        widget.controller!.text = result.files.first.path!;
       });
     }
   }
 
-  void _showImageSourceDialog() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a Photo'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +74,7 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
                 Icons.upload_file,
                 color: grey,
               ),
-              onPressed: _showImageSourceDialog,
+              onPressed: _pickImage,
             ),
             hintText: "Select an image",
             hintStyle: robotoBold.copyWith(
@@ -104,7 +83,7 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
             ),
           ),
           validator: widget.validator, // Use the passed validator (if any)
-          onTap: _showImageSourceDialog,
+          onTap: _pickImage,
         ),
         const SizedBox(height: 10),
         if (_selectedImage != null)

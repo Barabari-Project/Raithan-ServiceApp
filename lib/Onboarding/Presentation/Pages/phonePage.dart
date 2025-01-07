@@ -6,7 +6,7 @@ class PhonePage extends StatelessWidget {
   final TextEditingController phoneController;
   final GlobalKey<FormState> formKey;
 
-  const PhonePage({
+  PhonePage({
     super.key,
     required this.phoneController,
     required this.formKey,

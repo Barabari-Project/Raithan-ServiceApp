@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
 class DropdownTextField extends StatefulWidget {
@@ -38,10 +39,17 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
     final Size size = renderBox.size;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
 
+    double dropdownTop = offset.dy + size.height + 5;
+
+    // Check if the dropdown would overflow the screen and adjust the position
+    if (dropdownTop + 200 > AppDimensions.height) {
+      dropdownTop = offset.dy - 5 - 200; // Show above the field if below screen
+    }
+
     return OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx,
-        top: offset.dy + size.height + 5,
+        top: dropdownTop,
         width: size.width,
         child: CompositedTransformFollower(
           link: _layerLink,

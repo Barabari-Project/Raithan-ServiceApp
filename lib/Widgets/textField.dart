@@ -6,6 +6,7 @@ class CustomTextfield extends StatelessWidget {
   final TextInputType type;
   final String label;
   final String? Function(String?)? validator;
+  final FocusNode? focusNode;
 
   const CustomTextfield({
     super.key,
@@ -13,6 +14,7 @@ class CustomTextfield extends StatelessWidget {
     this.type = TextInputType.text,
     required this.label,
     this.validator,
+    this.focusNode
   });
 
   @override
@@ -21,6 +23,7 @@ class CustomTextfield extends StatelessWidget {
       controller: controller,
       keyboardType: type,
       cursorColor: black,
+      focusNode: focusNode,
       style: Theme.of(context).textTheme.titleMedium!.copyWith(color: black),
       decoration: InputDecoration(
         label: Text(label),
