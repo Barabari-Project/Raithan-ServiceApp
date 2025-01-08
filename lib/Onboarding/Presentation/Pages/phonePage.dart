@@ -42,6 +42,8 @@ class PhonePage extends StatelessWidget {
                 controller: phoneController,
                 type: TextInputType.phone,
                 label: 'Phone Number',
+                maxLength: 10,
+                isBuildCounterRequired: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a phone number';

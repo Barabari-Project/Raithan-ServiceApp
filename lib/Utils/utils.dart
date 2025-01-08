@@ -16,6 +16,29 @@ class Utils{
   }
 
 
+  static String convertTo12HourFormat(String time24) {
+
+    if (time24.contains('AM') || time24.contains('PM')) {
+      return time24; // No change needed, already in 12-hour format
+    }
+
+    List<String> parts = time24.split(':'); // Split the time into hours and minutes
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+
+    // Determine AM/PM
+    String period = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hour to 12-hour format
+    int hour12 = hours % 12;
+    if (hour12 == 0) hour12 = 12; // Handle 0 as 12 for AM/PM format
+
+    // Format minutes with leading zero if necessary
+    String formattedTime = '$hour12:${minutes.toString().padLeft(2, '0')} $period';
+    return formattedTime;
+  }
+
+
   static handleException(Exception exception) {
 
       if (exception is UnAuthorizedException ) {

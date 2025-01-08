@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
@@ -7,14 +9,20 @@ class CustomTextfield extends StatelessWidget {
   final String label;
   final String? Function(String?)? validator;
   final FocusNode? focusNode;
+  final int? maxLength;
+  final bool? isBuildCounterRequired;
+  void Function(String)? onChanged;
 
-  const CustomTextfield({
+  CustomTextfield({
     super.key,
     required this.controller,
     this.type = TextInputType.text,
     required this.label,
     this.validator,
-    this.focusNode
+    this.focusNode,
+    this.maxLength,
+    this.isBuildCounterRequired,
+    this.onChanged
   });
 
   @override
@@ -43,9 +51,8 @@ class CustomTextfield extends StatelessWidget {
         ),
       ),
       validator: validator,
-      maxLength: type == TextInputType.phone
-          ? 10
-          : null, // Set maxLength to 10 for phone input
+      maxLength: maxLength, //
+      buildCounter: (isBuildCounterRequired  != null && isBuildCounterRequired == true)? null : (context, {required currentLength, maxLength, required isFocused}) => null,// Set maxLength to 10 for phone input
     );
   }
 }

@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:raithan_serviceapp/Onboarding/Data/Repository/onboarding_repository.dart';
 import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/businessDetailsPage.dart';
@@ -18,13 +19,12 @@ import 'package:raithan_serviceapp/Utils/storage.dart';
 import 'package:raithan_serviceapp/Utils/utils.dart';
 import 'package:raithan_serviceapp/constants/api_constants.dart';
 import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
-import 'package:raithan_serviceapp/home.dart';
+import 'package:raithan_serviceapp/constants/routes/app_route.dart';
+import 'package:raithan_serviceapp/constants/routes/route_name.dart';
 
 import '../../dtos/file_with_media_type.dart';
 import '../../network/BaseApiServices.dart';
 import '../../network/NetworkApiService.dart';
-import 'package:http_parser/http_parser.dart';
-
 
 class Registration extends StatefulWidget {
   final String? phone;
@@ -56,16 +56,18 @@ class _RegistrationState extends State<Registration> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _workingDaysController = TextEditingController();
 
-// Define controllers for the working days (use a map or individual controllers)
-  final Map<String, bool> _workingDays = {
-    'Monday': true,
-    'Tuesday': false,
-    'Wednesday': true,
-    'Thursday': false,
-    'Friday': true,
-    'Saturday': true,
-    'Sunday': false,
+  final ScrollController scrollController = ScrollController();
+
+  Map<String, bool> workingDays = {
+    "Monday": false,
+    "Tuesday": false,
+    "Wednesday": false,
+    "Thursday": false,
+    "Friday": false,
+    "Saturday": false,
+    "Sunday": false,
   };
 
 // Define the working time controllers (start and end time)
@@ -75,9 +77,11 @@ class _RegistrationState extends State<Registration> {
   final GlobalKey<FormState> _phoneFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _otpFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _detailFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _businessDetailFormKey = GlobalKey<FormState>();
+
   BaseApiServices baseApiServices = NetworkApiService();
 
-  final OnboardingRepository _onboardingRepository = OnboardingRepository(
+  final OnboardingRepository onboardingRepository = OnboardingRepository(
     baseUrl: APIConstants.baseUrl,
   );
 
@@ -95,8 +99,6 @@ class _RegistrationState extends State<Registration> {
     });
   }
 
-
-
   final GlobalKey _containerKeyHero = GlobalKey();
 
   final GlobalKey _containerKeyNextButton = GlobalKey();
@@ -110,7 +112,6 @@ class _RegistrationState extends State<Registration> {
       String phoneNumber = _phoneController.text;
 
       try {
-
         final response = await baseApiServices.getPostApiResponse(
             "${APIConstants.baseUrl}${APIConstants.providerSentOTP}",
             {
@@ -126,9 +127,7 @@ class _RegistrationState extends State<Registration> {
 
         Utils.showSnackbar(
             "Yeah !", response["message"], CustomSnackbarStatus.success);
-
       } catch (e) {
-
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -137,13 +136,13 @@ class _RegistrationState extends State<Registration> {
               "Some Thing Went Wrong Please Try Again Later !",
               CustomSnackbarStatus.error);
         }
-
       } finally {
         _hideLoading(); // Hide loading indicator
       }
-
     } else {
       _hideLoading(); // Hide loading indicator
+      Utils.showSnackbar("Almost There!", "Please write valid Phone Number",
+          CustomSnackbarStatus.warning);
     }
   }
 
@@ -151,26 +150,27 @@ class _RegistrationState extends State<Registration> {
     if (_otpFormKey.currentState?.validate() ?? false) {
       _showLoading();
       try {
-        final response = await baseApiServices.getPostApiResponse("${APIConstants.baseUrl}${APIConstants.providerVerifyOTP}",
-          {
-          'Content-Type': 'application/json',
-          },
-          jsonEncode({
-            'mobileNumber': "+91${_phoneController.text}",
-            'code': _otpController.text,
-          }),
-          null,
-          false);
+        final response = await baseApiServices.getPostApiResponse(
+            "${APIConstants.baseUrl}${APIConstants.providerVerifyOTP}",
+            {
+              'Content-Type': 'application/json',
+            },
+            jsonEncode({
+              'mobileNumber': "+91${_phoneController.text}",
+              'code': _otpController.text,
+            }),
+            null,
+            false);
 
         String jwtToken = response['token'];
         Storage.saveValue("jwtToken", jwtToken);
-        Utils.showSnackbar("Yeah !", response["message"], CustomSnackbarStatus.success);
+        Utils.showSnackbar(
+            "Yeah !", response["message"], CustomSnackbarStatus.success);
 
         setState(() {
           currentPhase = 2;
         });
       } catch (e) {
-
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -179,17 +179,14 @@ class _RegistrationState extends State<Registration> {
               "Some Thing Went Wrong Please Try Again Later !",
               CustomSnackbarStatus.error);
         }
-
       } finally {
         _hideLoading();
       }
     } else {
       _hideLoading(); // Hide loading indicator
 
-      // InVoke Validator every where
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid OTP')),
-      );
+      Utils.showSnackbar("Almost There!", "Please write valid OTP",
+          CustomSnackbarStatus.warning);
     }
   }
 
@@ -197,22 +194,28 @@ class _RegistrationState extends State<Registration> {
     if (_detailFormKey.currentState?.validate() ?? false) {
       _showLoading();
       try {
-
         String filePath = _imageController.text;
 
         List<String> filePart = filePath.split(".");
 
-        MediaType imageMediaType = MediaType('image', filePart.last); // Assuming the file is a JPEG image
+        MediaType imageMediaType = MediaType(
+            'image', filePart.last); // Assuming the file is a JPEG image
 
-        final response = await baseApiServices.postMultipartFilesUploadApiResponse(APIConstants.providerSaveProfileDetails,
-            null, {
-              'firstName': _firstNameController.text,
-              'lastName': _lastNameController.text,
-              'yearOfBirth': _dobController.text,
-              'gender': _genderController.text,
-            }, {'img': FileWithMediaType(File(filePath), imageMediaType) }, true);
+        final response =
+            await baseApiServices.postMultipartFilesUploadApiResponse(
+                APIConstants.providerSaveProfileDetails,
+                null,
+                {
+                  'firstName': _firstNameController.text,
+                  'lastName': _lastNameController.text,
+                  'yearOfBirth': _dobController.text,
+                  'gender': _genderController.text,
+                },
+                {'img': FileWithMediaType(File(filePath), imageMediaType)},
+                true);
 
-        Utils.showSnackbar("Yeah !", response?["message"], CustomSnackbarStatus.success);
+        Utils.showSnackbar(
+            "Yeah !", response?["message"], CustomSnackbarStatus.success);
 
         setState(() {
           currentPhase = 3;
@@ -227,7 +230,6 @@ class _RegistrationState extends State<Registration> {
               "Some Thing Went Wrong Please Try Again Later !",
               CustomSnackbarStatus.error);
         }
-
       } finally {
         _hideLoading();
       }
@@ -241,40 +243,65 @@ class _RegistrationState extends State<Registration> {
   }
 
   void _submitBusinessDetails() async {
-    if (_detailFormKey.currentState?.validate() ?? false) {
+    if (_businessDetailFormKey.currentState?.validate() ?? false) {
+      scrollController.animateTo(
+        0, // Scroll to top (offset 0)
+        duration: Duration(milliseconds: 300), // Smooth scroll duration
+        curve: Curves.easeInOut, // Scroll curve
+      );
       _showLoading();
       try {
+        Map<String, String> workingTime = {
+          "start": _startTimeController.text,
+          "end": _endTimeController.text,
+        };
 
-        await _onboardingRepository.uploadProfile(
-          image: File(_imageController.text),
-          firstName: _firstNameController.text,
-          lastName: _lastNameController.text,
-          year: _dobController.text,
-          gender: _genderController.text,
-        );
+        Map<String, dynamic> businessDetails = {
+          "businessName": _businessNameController.text,
+          "pincode": _pincodeController.text,
+          "blockNumber": _blockNumberController.text,
+          "street": _streetController.text,
+          "area": _areaController.text,
+          "landmark": _landmarkController.text,
+          "city": _cityController.text,
+          "state": _stateController.text,
+          "workingDays": workingDays,
+          "workingTime": workingTime,
+          "category": _categoryController.text,
+        };
+        final response = await baseApiServices.getPostApiResponse(
+            "${APIConstants.baseUrl}${APIConstants.providerSaveBusinessDetails}",
+            {
+              'Content-Type': 'application/json',
+            },
+            jsonEncode(businessDetails),
+            null,
+            true);
+        print("done");
+        print(response);
 
-        setState(() {
-          currentPhase = 3;
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        });
+        Utils.showSnackbar(
+            "Yeah !", response["message"], CustomSnackbarStatus.success);
+
+        Get.offNamed(RouteName.provider_home);
+
       } catch (e) {
         print(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Something went wrong. Please Try Again.")),
-        );
+        if (e is Exception) {
+          Utils.handleException(e);
+        } else {
+          Utils.showSnackbar(
+              "Oops !",
+              "Some Thing Went Wrong Please Try Again Later !",
+              CustomSnackbarStatus.error);
+        }
       } finally {
         _hideLoading();
       }
     } else {
       _hideLoading();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter valid Personal Details')),
-      );
+      Utils.showSnackbar("Almost There!", "Please write valid details",
+          CustomSnackbarStatus.warning);
     }
   }
 
@@ -288,9 +315,11 @@ class _RegistrationState extends State<Registration> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
-      final RenderBox renderBoxHero = _containerKeyHero.currentContext?.findRenderObject() as RenderBox;
-      final RenderBox renderBoxNextButton = _containerKeyNextButton.currentContext?.findRenderObject() as RenderBox;
+      final RenderBox renderBoxHero =
+          _containerKeyHero.currentContext?.findRenderObject() as RenderBox;
+      final RenderBox renderBoxNextButton =
+          _containerKeyNextButton.currentContext?.findRenderObject()
+              as RenderBox;
 
       setState(() {
         containerHeroHeight = renderBoxHero.size.height;
@@ -299,27 +328,34 @@ class _RegistrationState extends State<Registration> {
     });
   }
 
-  Widget getLineProgressWidget(int currentPhase, int stepNumber)
-  {
+  Widget getLineProgressWidget(int currentPhase, int stepNumber) {
     if (stepNumber == currentPhase) {
-      return const DottedLine(dashColor: Colors.green,
+      return const DottedLine(
+        dashColor: Colors.green,
         dashLength: 3.0,
         dashGapLength: 4.0,
-        lineThickness: 2.0,);
+        lineThickness: 2.0,
+      );
     } else if (stepNumber > currentPhase) {
-      return const DottedLine(dashColor: Colors.grey,
+      return const DottedLine(
+        dashColor: Colors.grey,
         dashLength: 3.0,
         dashGapLength: 4.0,
-        lineThickness: 2.0,);
+        lineThickness: 2.0,
+      );
     } else {
       return Container(
-        decoration: BoxDecoration(border: Border.all(color: Colors.green,),),);
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.green,
+          ),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -347,20 +383,28 @@ class _RegistrationState extends State<Registration> {
       );
     } else {
       currentPage = Businessdetailspage(
-            firstNameController: _firstNameController,
-            lastNameController: _lastNameController,
-            dobController: _dobController,
-            imageController: _imageController,
-            genderController: _genderController,
-            formKey: _detailFormKey,
-          );
-
+        businessNameController: _businessNameController,
+        pincodeController: _pincodeController,
+        blockNumberController: _blockNumberController,
+        streetController: _streetController,
+        areaController: _areaController,
+        landmarkController: _landmarkController,
+        cityController: _cityController,
+        stateController: _stateController,
+        categoryController: _categoryController,
+        startTimeController: _startTimeController,
+        // New parameter
+        endTimeController: _endTimeController,
+        workingDaysController: _workingDaysController,
+        workingDays: workingDays,
+        formKey: _businessDetailFormKey,
+      );
     }
-
 
     return Scaffold(
       backgroundColor: black,
       body: SingleChildScrollView(
+        controller: scrollController,
         child: Stack(
           children: [
             Column(
@@ -370,16 +414,18 @@ class _RegistrationState extends State<Registration> {
                   Container(
                     key: _containerKeyHero,
                     // height: 250,
-                    padding: const EdgeInsets.only(top: AppDimensions.auth_screen_top_padding, left: AppDimensions.auth_screen_padding, right: AppDimensions.auth_screen_padding),
+                    padding: const EdgeInsets.only(
+                        top: AppDimensions.auth_screen_top_padding,
+                        left: AppDimensions.auth_screen_padding,
+                        right: AppDimensions.auth_screen_padding),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Welcome',
                           style: robotoNormal.copyWith(
-                            color: Colors.white38,
-                            fontSize: AppDimensions.regularFontSize
-                          ),
+                              color: Colors.white38,
+                              fontSize: AppDimensions.regularFontSize),
                         ),
                         const SizedBox(height: 5),
                         Text(
@@ -401,8 +447,8 @@ class _RegistrationState extends State<Registration> {
                               TextSpan(
                                 text: 'Login',
                                 style: robotoBold.copyWith(
-                                  color:
-                                      Colors.blue, // Different color for "Login"
+                                  color: Colors.blue,
+                                  // Different color for "Login"
                                   fontSize: 10,
                                   decoration: TextDecoration
                                       .underline, // Underline for emphasis
@@ -425,7 +471,6 @@ class _RegistrationState extends State<Registration> {
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-
                             StepItemText(
                               stepNumber: 1,
                               label: 'Phone  ',
@@ -463,12 +508,10 @@ class _RegistrationState extends State<Registration> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 5,
-                                  top: 3
-                                ),
-                                child: getLineProgressWidget(currentPhase, 0)
-                              ),
+                                  padding:
+                                      const EdgeInsets.only(right: 5, top: 3),
+                                  child:
+                                      getLineProgressWidget(currentPhase, 0)),
                             ),
                             StepItem(
                               stepNumber: 2,
@@ -477,12 +520,10 @@ class _RegistrationState extends State<Registration> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 5,
-                                  top: 3
-                                ),
-                                child: getLineProgressWidget(currentPhase, 1)
-                              ),
+                                  padding:
+                                      const EdgeInsets.only(right: 5, top: 3),
+                                  child:
+                                      getLineProgressWidget(currentPhase, 1)),
                             ),
                             StepItem(
                               stepNumber: 3,
@@ -491,12 +532,10 @@ class _RegistrationState extends State<Registration> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 5,
-                                  top: 3
-                                ),
-                                child: getLineProgressWidget(currentPhase, 2)
-                              ),
+                                  padding:
+                                      const EdgeInsets.only(right: 5, top: 3),
+                                  child:
+                                      getLineProgressWidget(currentPhase, 2)),
                             ),
                             StepItem(
                               stepNumber: 4,
@@ -508,17 +547,18 @@ class _RegistrationState extends State<Registration> {
                       ],
                     ),
                   ),
-                const SizedBox(height: 30),
-                // Dynamic Content Section
+                const SizedBox(height: 30), // Dynamic Content Section
 
                 Container(
                   // height: screenHeight - containerHeroHeight - 30 - containerNextButtonHeight - AppDimensions.auth_screen_top_padding,
                   constraints: BoxConstraints(
-                    minHeight:  screenHeight - containerHeroHeight - containerNextButtonHeight - AppDimensions.auth_screen_top_padding
-                  ),
+                      minHeight: screenHeight -
+                          containerHeroHeight -
+                          containerNextButtonHeight -
+                          AppDimensions.auth_screen_top_padding),
                   decoration: const BoxDecoration(
                     color: Color.fromARGB(92, 248, 244, 244),
-                    borderRadius:  BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(37),
                       topRight: Radius.circular(37),
                     ),
@@ -534,17 +574,15 @@ class _RegistrationState extends State<Registration> {
                         ),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 50,
-                          left: 10,
-                          right: 10,
-                        ),
-                        child: currentPage
-                      ),
+                          padding: const EdgeInsets.only(
+                            top: 50,
+                            left: 10,
+                            right: 10,
+                          ),
+                          child: currentPage),
                     ),
                   ),
-                ),
-                // Footer Buttons
+                ), // Footer Buttons
                 Container(
                   key: _containerKeyNextButton,
                   padding:
@@ -554,12 +592,11 @@ class _RegistrationState extends State<Registration> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Back Button
-                      if(currentPhase == 1)
-                         Container(
+                      if (currentPhase == 1)
+                        Container(
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.green),
                             borderRadius: BorderRadius.circular(12),
-
                           ),
                           child: IconButton(
                             onPressed: () {
@@ -583,18 +620,16 @@ class _RegistrationState extends State<Registration> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-
                               TextButton(
-                                onPressed: (){
+                                onPressed: () {
                                   setState(() {
                                     if (currentPhase == 0) {
                                       _submitPhone(context);
                                     } else if (currentPhase == 1) {
                                       _submitOtp();
-                                    } else if( currentPhase == 2){
+                                    } else if (currentPhase == 2) {
                                       _submitDetails();
-                                    }
-                                    else{
+                                    } else {
                                       _submitBusinessDetails();
                                     }
                                   });
@@ -609,26 +644,25 @@ class _RegistrationState extends State<Registration> {
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
-
                                     ),
                                     IconButton(
                                       iconSize: 22.0,
                                       padding: EdgeInsets.only(bottom: 1),
                                       icon: const Icon(Icons.arrow_forward),
-                                      color: Colors.black, onPressed: () {
-                                      setState(() {
-                                        if (currentPhase == 0) {
-                                          _submitPhone(context);
-                                        } else if (currentPhase == 1) {
-                                          _submitOtp();
-                                        } else if( currentPhase == 2){
-                                          _submitDetails();
-                                        }
-                                        else{
-                                          _submitBusinessDetails();
-                                        }
-                                      });
-                                    },
+                                      color: Colors.black,
+                                      onPressed: () {
+                                        setState(() {
+                                          if (currentPhase == 0) {
+                                            _submitPhone(context);
+                                          } else if (currentPhase == 1) {
+                                            _submitOtp();
+                                          } else if (currentPhase == 2) {
+                                            _submitDetails();
+                                          } else {
+                                            _submitBusinessDetails();
+                                          }
+                                        });
+                                      },
                                     )
                                   ],
                                 ),
@@ -680,9 +714,9 @@ class StepItem extends StatelessWidget {
       children: [
         Column(
           children: [
-
-                SizedBox(width: 30,)
-
+            SizedBox(
+              width: 30,
+            )
           ],
         ),
         const SizedBox(height: 5),
@@ -735,7 +769,6 @@ class StepItemText extends StatelessWidget {
       children: [
         Row(
           children: [
-
             Text(
               label,
               style: const TextStyle(
@@ -745,7 +778,6 @@ class StepItemText extends StatelessWidget {
             ),
           ],
         ),
-
       ],
     );
   }

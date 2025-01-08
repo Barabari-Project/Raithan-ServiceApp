@@ -12,14 +12,14 @@ PreferredSizeWidget customAppBar(String title, BuildContext context,{TabBar? tab
 
   return AppBar(
     iconTheme: const IconThemeData(
-        color: white
+        color: white,
     ),
     bottom: tabBar,
     title: Text(
       title,
       style: const TextStyle(color: white),
     ),
-    backgroundColor: Colors.cyan,
+    backgroundColor: Color.fromRGBO(18, 130, 105,1),
     actions: [
       Padding(
         padding: const EdgeInsets.only(right: 10.0),

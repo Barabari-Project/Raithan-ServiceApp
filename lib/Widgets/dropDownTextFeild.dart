@@ -7,6 +7,7 @@ class DropdownTextField extends StatefulWidget {
   final String label;
   final List<String> options;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
 
   const DropdownTextField({
     super.key,
@@ -14,6 +15,7 @@ class DropdownTextField extends StatefulWidget {
     required this.label,
     required this.options,
     this.validator,
+    this.onChanged
   });
 
   @override
@@ -67,7 +69,7 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
                       title: Text(option),
                       onTap: () {
                         setState(() {
-                          widget.controller.text = option;
+                          widget.controller.value = TextEditingValue(text: option);
                         });
                         _hideDropdown();
                       },
@@ -86,6 +88,7 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: TextFormField(
+        onChanged: widget.onChanged,
         controller: widget.controller,
         readOnly: true, // Prevent manual text editing
         decoration: InputDecoration(

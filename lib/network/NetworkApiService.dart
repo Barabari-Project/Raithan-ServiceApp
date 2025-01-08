@@ -59,6 +59,9 @@ class NetworkApiService extends BaseApiServices {
               body: body,
               encoding: encoding)
           .timeout(Duration(seconds: 10));
+      print("printing response");
+      print(response.statusCode);
+      print(jsonDecode(response.body));
       responsejson = returnResponse(response);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
@@ -125,8 +128,14 @@ class NetworkApiService extends BaseApiServices {
     switch (response.statusCode) {
       case 200:
         return jsonDecode(response.body);
+      case 201:
+        return jsonDecode(response.body);
+      case 204:
+        return null;
       case 401:
         throw UnAuthorizedException();
+      case 502:
+        throw BadRequestException("Server Is Down, Please Try Again Later");
       default:
         throw BadRequestException(jsonDecode(response.body)["error"]);
     }
