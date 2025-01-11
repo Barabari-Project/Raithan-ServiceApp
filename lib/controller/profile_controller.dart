@@ -1,14 +1,25 @@
 
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:raithan_serviceapp/constants/api_constants.dart';
+import 'package:raithan_serviceapp/dtos/file_with_media_type.dart';
+import 'package:raithan_serviceapp/network/BaseApiServices.dart';
+import 'package:raithan_serviceapp/network/NetworkApiService.dart';
+import 'package:http_parser/http_parser.dart';
+
+import '../Utils/utils.dart';
+import '../constants/enums/custom_snackbar_status.dart';
 
 class ProfileController extends GetxController {
 
   RxBool isEditAllowed = false.obs;
-  RxBool isProfileImageUpdated = false.obs;
+  RxBool isLoading = false.obs;
+  RxBool savingProfileDetails = false.obs;
+  RxString profileImage = "".obs;
+  RxBool isImageUpdated = false.obs;
 
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -23,7 +34,28 @@ class ProfileController extends GetxController {
   FocusNode dobFocusNode = FocusNode();
   FocusNode genderFocusNode = FocusNode();
 
-  RxString profileImagePath = 'assets/images/farm-background.jpg'.obs;
+  final BaseApiServices baseApiServices = NetworkApiService();
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    dynamic response = await fetchUserProfileDetails();
+    if(response != null)
+      {
+        print(response);
+        firstNameController.value =
+            TextEditingValue(text: response["provider"]["firstName"]);
+        lastNameController.value =
+            TextEditingValue(text: response["provider"]["lastName"]);
+        dobController.value =
+            TextEditingValue(text: response["provider"]["yearOfBirth"].toString());
+        genderController.value =
+            TextEditingValue(text: response["provider"]["gender"]);
+
+        profileImage.value = response["provider"]["profilePicturePath"];
+      }
+  }
+
 
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -33,8 +65,8 @@ class ProfileController extends GetxController {
     );
     if(result != null)
       {
-        profileImagePath.value = result.files.first.path!;
-        isProfileImageUpdated.value = true;
+        profileImage.value = result.files.first.path!;
+        isImageUpdated.value = true;
       }
   }
 
@@ -85,12 +117,88 @@ class ProfileController extends GetxController {
     );
   }
 
-  void saveUserProfilDetails()
+  Future<void> saveUserProfilDetails() async
   {
-       print(firstNameController.value.text);
-       print(lastNameController.value.text);
-       print(dobController.value.text);
-       print(genderController.value.text);
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      scrollController.animateTo(
+        scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.linear,
+      );
+    });
+
+      savingProfileDetails.value = true;
+
+       try {
+         String filePath = profileImage.value;
+
+         List<String> filePart = filePath.split(".");
+
+         MediaType imageMediaType = MediaType(
+             'image', filePart.last); // Assuming the file is a JPEG image
+
+         dynamic images = isImageUpdated.value ? {'img': FileWithMediaType(File(filePath), imageMediaType)} : null;
+
+         final response = await baseApiServices.postMultipartFilesUploadApiResponse(
+             APIConstants.providerSaveProfileDetails,
+             null,
+             {
+               'firstName': firstNameController.value.text,
+               'lastName': lastNameController.value.text,
+               'yearOfBirth': dobController.value.text,
+               'gender': genderController.value.text,
+             },
+             images,
+             true);
+
+         Utils.showSnackbar("Yeah !", response?["message"], CustomSnackbarStatus.success);
+       }  catch (e) {
+         if (e is Exception) {
+           Utils.handleException(e);
+         } else {
+           print(e);
+           Utils.showSnackbar(
+               "Oops !",
+               "Some Thing Went Wrong Please Try Again Later !",
+               CustomSnackbarStatus.error);
+         }
+       }
+       finally{
+         savingProfileDetails.value = false;
+         isEditAllowed.value = false;
+       }
+  }
+
+  Future<dynamic> fetchUserProfileDetails() async
+  {
+     isLoading.value = true;
+
+     try {
+       dynamic response = await baseApiServices.getGetApiResponse(
+           "${APIConstants.baseUrl}${APIConstants
+               .providerGetProfileDetails}", null,
+           true);
+       return response;
+     }
+     catch (e)
+     {
+       print(e);
+       if (e is Exception) {
+         Utils.handleException(e);
+       } else {
+         Utils.showSnackbar(
+             "Oops !",
+             "Some Thing Went Wrong Please Try Again Later !",
+             CustomSnackbarStatus.error);
+       }
+     }
+     finally{
+       isLoading.value = false;
+     }
+
+     return null;
+
   }
 
 }

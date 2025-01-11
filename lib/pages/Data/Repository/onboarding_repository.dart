@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:raithan_serviceapp/Utils/storage.dart';
+import 'package:raithan_serviceapp/constants/storage_keys.dart';
 
 class OnboardingRepository {
   final String baseUrl;
@@ -78,7 +79,7 @@ class OnboardingRepository {
         '$baseUrl/raithan/api/service-providers/onboard/user/profile');
     try {
       print("here");
-      final token = await Storage.getValue("jwtToken");
+      final token = await Storage.getValue(StorageKeys.JWT_TOKEN);
       print(token);
 
       var request = http.MultipartRequest('POST', url);

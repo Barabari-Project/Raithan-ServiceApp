@@ -24,4 +24,6 @@ class AppColors{
   static Color lightOrange = const Color(0xFFFFA500);
   static Color brightRed = const Color(0xFFFF0000);
   static Color lightPurple = const Color(0xFFC39BD3);
+
+  static Color appBarColor = Color.fromRGBO(18, 130, 105,1);
 }

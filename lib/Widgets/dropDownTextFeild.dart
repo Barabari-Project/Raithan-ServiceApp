@@ -8,14 +8,18 @@ class DropdownTextField extends StatefulWidget {
   final List<String> options;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
+  final FocusNode? focusNode;
+  void Function(String)? onFieldSubmitted;
 
-  const DropdownTextField({
+  DropdownTextField({
     super.key,
     required this.controller,
     required this.label,
     required this.options,
     this.validator,
-    this.onChanged
+    this.onChanged,
+    this.focusNode,
+    this.onFieldSubmitted
   });
 
   @override
@@ -90,6 +94,7 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
       child: TextFormField(
         onChanged: widget.onChanged,
         controller: widget.controller,
+        focusNode: widget.focusNode,
         readOnly: true, // Prevent manual text editing
         decoration: InputDecoration(
           labelText: widget.label,

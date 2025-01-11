@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/storage.dart';
 import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
 import 'package:raithan_serviceapp/network/app_exception.dart';
@@ -14,6 +16,7 @@ class Utils{
     current.unfocus();
     FocusScope.of(context).requestFocus(target);
   }
+
 
 
   static String convertTo12HourFormat(String time24) {
@@ -97,5 +100,20 @@ class Utils{
       );
     }
   }
+
+  static Widget getLoadingWidget([double height = 30])
+  {
+    return Container(
+      // color: Colors.black.withOpacity(0.5),
+      height: AppDimensions.height,
+      child: Center(
+        child: LoadingAnimationWidget.hexagonDots(
+          color: Colors.green,
+          size: height,
+        ),
+      ),
+    );
+  }
+
 
 }

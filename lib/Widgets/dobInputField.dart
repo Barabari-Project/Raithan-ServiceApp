@@ -4,11 +4,15 @@ import 'package:raithan_serviceapp/Utils/app_style.dart';
 class DOBInputField extends StatefulWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  final FocusNode? focusNode;
+  void Function(String)? onFieldSubmitted;
 
-  const DOBInputField({
+  DOBInputField({
     super.key,
     required this.controller,
     this.validator,
+    this.focusNode,
+    this.onFieldSubmitted
   });
 
   @override
@@ -57,6 +61,8 @@ class _DOBInputFieldState extends State<DOBInputField> {
       controller: widget.controller,
       readOnly: true, // Prevent keyboard from appearing
       cursorColor: Colors.black,
+      focusNode: widget.focusNode,
+      onFieldSubmitted: widget.onFieldSubmitted,
       style: Theme.of(context)
           .textTheme
           .titleMedium!

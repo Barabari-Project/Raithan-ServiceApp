@@ -6,25 +6,25 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:raithan_serviceapp/Onboarding/Data/Repository/onboarding_repository.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/businessDetailsPage.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/otpPage.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/personalDetailsPage.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/Pages/phonePage.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/login.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/Utils/storage.dart';
 import 'package:raithan_serviceapp/Utils/utils.dart';
 import 'package:raithan_serviceapp/constants/api_constants.dart';
 import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
-import 'package:raithan_serviceapp/constants/routes/app_route.dart';
 import 'package:raithan_serviceapp/constants/routes/route_name.dart';
+import 'package:raithan_serviceapp/constants/storage_keys.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../dtos/file_with_media_type.dart';
 import '../../network/BaseApiServices.dart';
 import '../../network/NetworkApiService.dart';
+import '../Data/Repository/onboarding_repository.dart';
+import 'Pages/businessDetailsPage.dart';
+import 'Pages/otpPage.dart';
+import 'Pages/personalDetailsPage.dart';
+import 'Pages/phonePage.dart';
+import 'login.dart';
 
 class Registration extends StatefulWidget {
   final String? phone;
@@ -38,7 +38,9 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
+
   int currentPhase = 0;
+
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
@@ -80,10 +82,6 @@ class _RegistrationState extends State<Registration> {
   final GlobalKey<FormState> _businessDetailFormKey = GlobalKey<FormState>();
 
   BaseApiServices baseApiServices = NetworkApiService();
-
-  final OnboardingRepository onboardingRepository = OnboardingRepository(
-    baseUrl: APIConstants.baseUrl,
-  );
 
   bool isLoading = false; // Add loading state
 
@@ -151,7 +149,7 @@ class _RegistrationState extends State<Registration> {
       _showLoading();
       try {
         final response = await baseApiServices.getPostApiResponse(
-            "${APIConstants.baseUrl}${APIConstants.providerVerifyOTP}",
+            "${APIConstants.baseUrl}${APIConstants.providerRegistartionVerifyOTP}",
             {
               'Content-Type': 'application/json',
             },
@@ -163,9 +161,12 @@ class _RegistrationState extends State<Registration> {
             false);
 
         String jwtToken = response['token'];
-        Storage.saveValue("jwtToken", jwtToken);
+        Storage.saveValue(StorageKeys.JWT_TOKEN, jwtToken);
         Utils.showSnackbar(
             "Yeah !", response["message"], CustomSnackbarStatus.success);
+
+        Storage.saveValue(StorageKeys.CURRENT_PHASE, "2");
+        Storage.saveValue(StorageKeys.USER_ROLE, "PROVIDER");
 
         setState(() {
           currentPhase = 2;
@@ -214,8 +215,9 @@ class _RegistrationState extends State<Registration> {
                 {'img': FileWithMediaType(File(filePath), imageMediaType)},
                 true);
 
-        Utils.showSnackbar(
-            "Yeah !", response?["message"], CustomSnackbarStatus.success);
+        Storage.saveValue(StorageKeys.USER_ID, response?["provider"]["_id"]);
+        Storage.saveValue(StorageKeys.CURRENT_PHASE, "3");
+        Utils.showSnackbar("Yeah !", response?["message"], CustomSnackbarStatus.success);
 
         setState(() {
           currentPhase = 3;
@@ -277,16 +279,19 @@ class _RegistrationState extends State<Registration> {
             jsonEncode(businessDetails),
             null,
             true);
-        print("done");
-        print(response);
+
 
         Utils.showSnackbar(
             "Yeah !", response["message"], CustomSnackbarStatus.success);
 
+        AuthController authController = Get.find();
+        authController.activeSession.value = true;
+        authController.userRole.value = "PROVIDER";
+        Storage.removeKey(StorageKeys.CURRENT_PHASE);
         Get.offNamed(RouteName.provider_home);
 
       } catch (e) {
-        print(e);
+
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -307,13 +312,13 @@ class _RegistrationState extends State<Registration> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.phone != null) {
       setState(() {
         _phoneController.text = widget.phone!;
       });
     }
-    super.initState();
-
+   setCurrentPhase();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final RenderBox renderBoxHero =
           _containerKeyHero.currentContext?.findRenderObject() as RenderBox;
@@ -326,6 +331,45 @@ class _RegistrationState extends State<Registration> {
         containerNextButtonHeight = renderBoxNextButton.size.height;
       });
     });
+  }
+
+  @override
+  void dispose()
+  {
+    // Dispose all TextEditingControllers
+    _phoneController.dispose();
+    _otpController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _dobController.dispose();
+    _imageController.dispose();
+    _genderController.dispose();
+
+    _businessNameController.dispose();
+    _pincodeController.dispose();
+    _blockNumberController.dispose();
+    _streetController.dispose();
+    _areaController.dispose();
+    _landmarkController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _categoryController.dispose();
+    _workingDaysController.dispose();
+    _startTimeController.dispose();
+    _endTimeController.dispose();
+
+    scrollController.dispose();
+
+    super.dispose();
+  }
+  void setCurrentPhase() async{
+    String? value = await Storage.getValue(StorageKeys.CURRENT_PHASE);
+    if(value != null &&( value.length > 0))
+      {
+         setState(() {
+           currentPhase = int.parse(value);
+         });
+      }
   }
 
   Widget getLineProgressWidget(int currentPhase, int stepNumber) {
@@ -425,14 +469,14 @@ class _RegistrationState extends State<Registration> {
                           'Welcome',
                           style: robotoNormal.copyWith(
                               color: Colors.white38,
-                              fontSize: AppDimensions.regularFontSize),
+                              fontSize: AppDimensions.largeFontSize),
                         ),
                         const SizedBox(height: 5),
                         Text(
                           'Register',
                           style: robotoBold.copyWith(
                             color: white,
-                            fontSize: 36,
+                            fontSize: AppDimensions.extraLargeFontSize*1.5,
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -441,7 +485,7 @@ class _RegistrationState extends State<Registration> {
                             text: 'Already Registered? ',
                             style: robotoNormal.copyWith(
                               color: white,
-                              fontSize: 10,
+                              fontSize: AppDimensions.regularFontSize,
                             ),
                             children: [
                               TextSpan(
@@ -449,7 +493,7 @@ class _RegistrationState extends State<Registration> {
                                 style: robotoBold.copyWith(
                                   color: Colors.blue,
                                   // Different color for "Login"
-                                  fontSize: 10,
+                                  fontSize: AppDimensions.regularFontSize,
                                   decoration: TextDecoration
                                       .underline, // Underline for emphasis
                                 ),
@@ -554,39 +598,29 @@ class _RegistrationState extends State<Registration> {
                   constraints: BoxConstraints(
                       minHeight: screenHeight -
                           containerHeroHeight -
-                          containerNextButtonHeight -
+                          containerNextButtonHeight - 30 -
                           AppDimensions.auth_screen_top_padding),
                   decoration: const BoxDecoration(
                     color: Color.fromARGB(92, 248, 244, 244),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(37),
-                      topRight: Radius.circular(37),
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF8F4F4),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          topRight: Radius.circular(40),
-                        ),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF8F4F4),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
                       ),
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 50,
-                            left: 10,
-                            right: 10,
-                          ),
-                          child: currentPage),
                     ),
+                    child: currentPage,
                   ),
                 ), // Footer Buttons
                 Container(
                   key: _containerKeyNextButton,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: EdgeInsets.only(left : AppDimensions.formFieldPadding, right: AppDimensions.formFieldPadding, bottom: AppDimensions.formFieldPadding),
                   color: white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -594,6 +628,7 @@ class _RegistrationState extends State<Registration> {
                       // Back Button
                       if (currentPhase == 1)
                         Container(
+                          margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.green),
                             borderRadius: BorderRadius.circular(12),
@@ -611,82 +646,96 @@ class _RegistrationState extends State<Registration> {
                       // Next Button
                       Expanded(
                         child: Container(
-                          margin: const EdgeInsets.only(left: 10),
                           height: 50,
                           decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (currentPhase == 0) {
-                                      _submitPhone(context);
-                                    } else if (currentPhase == 1) {
-                                      _submitOtp();
-                                    } else if (currentPhase == 2) {
-                                      _submitDetails();
-                                    } else {
-                                      _submitBusinessDetails();
-                                    }
-                                  });
-                                },
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      ' Next',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      iconSize: 22.0,
-                                      padding: EdgeInsets.only(bottom: 1),
-                                      icon: const Icon(Icons.arrow_forward),
-                                      color: Colors.black,
-                                      onPressed: () {
-                                        setState(() {
-                                          if (currentPhase == 0) {
-                                            _submitPhone(context);
-                                          } else if (currentPhase == 1) {
-                                            _submitOtp();
-                                          } else if (currentPhase == 2) {
-                                            _submitDetails();
-                                          } else {
-                                            _submitBusinessDetails();
-                                          }
-                                        });
-                                      },
-                                    )
-                                  ],
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                if (currentPhase == 0) {
+                                  _submitPhone(context);
+                                } else if (currentPhase == 1) {
+                                  _submitOtp();
+                                } else if (currentPhase == 2) {
+                                  _submitDetails();
+                                } else {
+                                  _submitBusinessDetails();
+                                }
+                              });
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Next',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              )
-                            ],
+                                SizedBox(width: 5,),
+                                Icon(Icons.arrow_forward,size: 22,color: Colors.black,weight: 1,)
+                              ],
+                            ),
                           ),
                         ),
                       ),
+                      // Expanded(
+                      //   child: Material(
+                      //     child: InkWell(
+                      //       onTap:() {
+                      //         setState(() {
+                      //           if (currentPhase == 0) {
+                      //             _submitPhone(context);
+                      //           } else if (currentPhase == 1) {
+                      //             _submitOtp();
+                      //           } else if (currentPhase == 2) {
+                      //             _submitDetails();
+                      //           } else {
+                      //             _submitBusinessDetails();
+                      //           }
+                      //         });
+                      //       } ,
+                      //       child: Container(
+                      //         height: 50,
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.green,
+                      //           borderRadius: BorderRadius.circular(12),
+                      //         ),
+                      //         child: const Row(
+                      //           mainAxisAlignment: MainAxisAlignment.center,
+                      //           children: [
+                      //             Row(
+                      //             crossAxisAlignment: CrossAxisAlignment.center,
+                      //             children: [
+                      //               const Text(
+                      //                 ' Next',
+                      //                 style: TextStyle(
+                      //                   color: Colors.black,
+                      //                   fontSize: 18,
+                      //                   fontWeight: FontWeight.bold,
+                      //                 ),
+                      //               ),
+                      //               SizedBox(width: 5,),
+                      //               Icon(Icons.arrow_forward,size: 22.0,),
+                      //             ],
+                      //                                                )
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
               ],
             ),
             if (isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                height: screenHeight,
-                child: Center(
-                  child: LoadingAnimationWidget.beat(
-                    color: Colors.green,
-                    size: 30,
-                  ),
-                ),
-              ),
+              Utils.getLoadingWidget(),
           ],
         ),
       ),
@@ -712,7 +761,7 @@ class StepItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
+      const Column(
           children: [
             SizedBox(
               width: 30,

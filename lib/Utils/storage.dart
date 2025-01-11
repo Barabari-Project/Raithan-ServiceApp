@@ -18,4 +18,9 @@ class Storage{
     await prefs.clear(); // This removes all stored key-value pairs
   }
 
+  static Future<void> removeKey(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key); // Removes the key-value pair associated with 'key'
+  }
+
 }

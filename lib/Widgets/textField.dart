@@ -11,7 +11,11 @@ class CustomTextfield extends StatelessWidget {
   final FocusNode? focusNode;
   final int? maxLength;
   final bool? isBuildCounterRequired;
+  final bool? readOnly;
+  final Widget? suffixIcon;
   void Function(String)? onChanged;
+  void Function()? onTap;
+  void Function(String)? onFieldSubmitted;
 
   CustomTextfield({
     super.key,
@@ -22,7 +26,11 @@ class CustomTextfield extends StatelessWidget {
     this.focusNode,
     this.maxLength,
     this.isBuildCounterRequired,
-    this.onChanged
+    this.onChanged,
+    this.readOnly,
+    this.suffixIcon,
+    this.onTap,
+    this.onFieldSubmitted
   });
 
   @override
@@ -30,10 +38,14 @@ class CustomTextfield extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: type,
+      readOnly: readOnly ?? false,
       cursorColor: black,
       focusNode: focusNode,
+      onFieldSubmitted: onFieldSubmitted,
+      onTap: onTap,
       style: Theme.of(context).textTheme.titleMedium!.copyWith(color: black),
       decoration: InputDecoration(
+        suffixIcon: suffixIcon,
         label: Text(label),
         labelStyle:
             Theme.of(context).textTheme.titleSmall!.copyWith(color: grey),

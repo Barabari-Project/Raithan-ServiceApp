@@ -6,10 +6,19 @@ class APIConstants{
 
    static const String providerSentOTP = "/raithan/api/service-providers/onboard/user/mobile";
 
-   static const String providerVerifyOTP = "/raithan/api/service-providers/onboard/user/verify-otp";
+   static const String providerRegistartionVerifyOTP = "/raithan/api/service-providers/onboard/user/verify-otp";
+
+   static const String providerLoginSentOTP = "/raithan/api/service-providers/login";
+
+   static const String providerLoginVerifyOTP = "/raithan/api/service-providers/login/verify-otp";
 
    static const String providerSaveProfileDetails = "/raithan/api/service-providers/onboard/user/profile";
 
    static const String providerSaveBusinessDetails = "/raithan/api/business";
+
+   static const String providerGetProfileDetails = "/raithan/api/service-providers/profile";
+
+   static const String providerGetBusinessDetails = "/raithan/api/business/user/";
+
 
 }

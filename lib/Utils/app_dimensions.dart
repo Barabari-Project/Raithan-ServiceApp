@@ -13,7 +13,7 @@ class AppDimensions{
 
   static const double auth_screen_padding = 20;
 
-  static const double auth_screen_top_padding = 60;
+  static const double auth_screen_top_padding = 50;
 
   static const double regularFontSize = 16;
 
@@ -22,4 +22,7 @@ class AppDimensions{
   static const double largeFontSize = 18;
 
   static const double extraLargeFontSize = 20;
+
+  static double splashScreenImageWidth = width*0.5;
+
 }

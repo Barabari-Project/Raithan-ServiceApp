@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/registration.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/constants/routes/app_route.dart';
+import 'package:raithan_serviceapp/controller/auth_controller.dart';
 
 void main() {
+  Get.put(AuthController());
   runApp(
     SafeArea(child: GetMaterialApp(  debugShowCheckedModeBanner: false,
       getPages: AppRoutes.appRoutes(),
@@ -18,21 +19,4 @@ void main() {
     ),
     )
   );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Raithan ServiceApp',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const Registration(),
-    );
-  }
 }
