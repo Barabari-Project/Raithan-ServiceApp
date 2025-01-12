@@ -43,6 +43,7 @@ class BusinessEdit extends GetView<BusinessEditController> {
                               endTimeController: controller.endTimeController,
                               workingDaysController: controller.workingDaysController,
                               workingDays: controller.workingDays,
+                              categories: controller.categories,
                               formKey: controller.businessDetailFormKey,
                             ),
                   Padding(

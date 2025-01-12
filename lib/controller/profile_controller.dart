@@ -27,7 +27,7 @@ class ProfileController extends GetxController {
   final TextEditingController imageController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-
+  final GlobalKey<FormState> profileDetailsFormKey = GlobalKey<FormState>();
 
   FocusNode firstNameFocusNode = FocusNode();
   FocusNode lastNameFocusNode = FocusNode();
@@ -120,6 +120,13 @@ class ProfileController extends GetxController {
   Future<void> saveUserProfilDetails() async
   {
 
+    if(!profileDetailsFormKey.currentState!.validate())
+      {
+        Utils.showSnackbar("Almost There!", "Please write valid Phone Number",
+            CustomSnackbarStatus.warning);
+        return;
+      }
+
     Future.delayed(const Duration(milliseconds: 100), () {
       scrollController.animateTo(
         scrollController.position.minScrollExtent,
@@ -152,6 +159,7 @@ class ProfileController extends GetxController {
              images,
              true);
 
+         isEditAllowed.value = false;
          Utils.showSnackbar("Yeah !", response?["message"], CustomSnackbarStatus.success);
        }  catch (e) {
          if (e is Exception) {
@@ -166,7 +174,6 @@ class ProfileController extends GetxController {
        }
        finally{
          savingProfileDetails.value = false;
-         isEditAllowed.value = false;
        }
   }
 

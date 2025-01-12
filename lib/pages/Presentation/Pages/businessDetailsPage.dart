@@ -8,6 +8,7 @@ import 'package:raithan_serviceapp/Widgets/dropDownTextFeild.dart';
 import 'package:raithan_serviceapp/Widgets/imageInputFeild.dart';
 import 'package:raithan_serviceapp/Widgets/textField.dart';
 import 'package:raithan_serviceapp/constants/enums/business_category.dart';
+import 'package:raithan_serviceapp/constants/regex_constant.dart';
 
 enum Gender { male, female, other }
 
@@ -26,7 +27,7 @@ class Businessdetailspage extends StatefulWidget {
   final TextEditingController endTimeController;
   final TextEditingController workingDaysController;
 
-
+  final Map<String,bool> categories;
 
   final Map<String, bool> workingDays ;
 
@@ -48,6 +49,7 @@ class Businessdetailspage extends StatefulWidget {
      required this.endTimeController,
      required this.workingDaysController,
      required this.workingDays,
+     required this.categories,
      required this.formKey,  // For
   });
 
@@ -165,22 +167,35 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 },
               ),
               sizedBox(),
-              DropdownTextField(
-                controller: widget.categoryController,
-                label: "Select an Business Category",
-                onChanged: (value){
-                  widget.formKey.currentState?.validate();
-                },
-                options: BusinessCategory.values.map((e) {
-                  return e.name;
-                }).toList(),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select an Business Category';
-                  }
-                  return null;
-                },
+            Container(
+              padding: const EdgeInsets.only(top:0,bottom: 0,right:10.0,left: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey),
               ),
+              child: Theme(
+                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                child: ExpansionTile(
+                    tilePadding: EdgeInsets.zero, // Removes padding around the tile
+                    collapsedBackgroundColor: Colors.transparent,
+                    title: const Text("Select Business Categories",  style: TextStyle(
+                      fontSize: AppDimensions.regularFontSize,
+                      fontWeight: FontWeight.bold,
+                    )),
+                    children: [ ...widget.categories.keys.map((category) {
+                      return CheckboxListTile(
+                        title: Text(category),
+                        value: widget.categories[category],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            widget.categories[category] = value!;
+                          });
+                        },
+                      );
+                    }).toList(), ]
+                ),
+              ),
+            ),
               sizedBox(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -330,6 +345,10 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                   if (value == null || value.isEmpty) {
                     return 'Please write your pincode';
                   }
+                  if(!RegExp(RegexConstant.otpOrPincodeValidationRegex).hasMatch(value))
+                  {
+                    return 'Pincode must be 6 digits only';
+                  }
                   return null;
                 },
               ),
@@ -401,46 +420,34 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 ],
 
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Title for the working days
-                    const Text(
-                      'Working Days',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-      
-                    // Container to wrap the checkboxes with title
-                    Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF5F5F5), // Whitesmoke color
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Column(
-                        children: [
-                          // Loop through the working days to create checkboxes
-                          ...widget.workingDays.keys.map((day) {
-                            return CheckboxListTile(
-                              title: Text(day),
-                              value: widget.workingDays[day],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  widget.workingDays[day] = value!;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                    ),
-                  ],
+              sizedBox(),
+              Container(
+                padding: const EdgeInsets.only(top:0,bottom: 0,right:10.0,left: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                      tilePadding: EdgeInsets.zero, // Removes padding around the tile
+                      collapsedBackgroundColor: Colors.transparent,
+                    title: const Text("Select Working Days",  style: TextStyle(
+                      fontSize: AppDimensions.regularFontSize,
+                      fontWeight: FontWeight.bold,
+                    )),
+                    children: [ ...widget.workingDays.keys.map((day) {
+                      return CheckboxListTile(
+                        title: Text(day),
+                        value: widget.workingDays[day],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            widget.workingDays[day] = value!;
+                          });
+                        },
+                      );
+                    }).toList(), ]
+                  ),
                 ),
               ),
 

@@ -388,15 +388,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
             if (isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                child: Center(
-                  child: LoadingAnimationWidget.beat(
-                    color: Colors.green,
-                    size: 30,
-                  ),
-                ),
-              ),
+              Utils.getLoadingWidget()
           ],
         ),
       ),

@@ -15,6 +15,7 @@ import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
 import 'package:raithan_serviceapp/constants/routes/route_name.dart';
 import 'package:raithan_serviceapp/constants/storage_keys.dart';
 
+import '../../constants/enums/business_category.dart';
 import '../../controller/auth_controller.dart';
 import '../../dtos/file_with_media_type.dart';
 import '../../network/BaseApiServices.dart';
@@ -71,6 +72,12 @@ class _RegistrationState extends State<Registration> {
     "Saturday": false,
     "Sunday": false,
   };
+
+  Map<String, bool> categories = Map.fromEntries(
+    BusinessCategory.values.map((category) {
+      return MapEntry(category.name, false);
+    }),
+  );
 
 // Define the working time controllers (start and end time)
   final TextEditingController _startTimeController = TextEditingController();
@@ -238,9 +245,8 @@ class _RegistrationState extends State<Registration> {
     } else {
       _hideLoading();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter valid Personal Details')),
-      );
+      Utils.showSnackbar("Almost There!", "Please write valid details",
+          CustomSnackbarStatus.warning);
     }
   }
 
@@ -269,7 +275,10 @@ class _RegistrationState extends State<Registration> {
           "state": _stateController.text,
           "workingDays": workingDays,
           "workingTime": workingTime,
-          "category": _categoryController.text,
+          "category": categories.entries
+              .where((entry) => entry.value == true)  // Filter for entries where value is true
+              .map((entry) => entry.key)  // Extract the key from the filtered entries
+              .toList(),
         };
         final response = await baseApiServices.getPostApiResponse(
             "${APIConstants.baseUrl}${APIConstants.providerSaveBusinessDetails}",
@@ -442,6 +451,7 @@ class _RegistrationState extends State<Registration> {
         workingDaysController: _workingDaysController,
         workingDays: workingDays,
         formKey: _businessDetailFormKey,
+        categories: categories,
       );
     }
 

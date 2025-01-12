@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
+import 'package:raithan_serviceapp/constants/regex_constant.dart';
 
 import '../../../constants/api_constants.dart';
 import '../../Data/Repository/onboarding_repository.dart';
@@ -134,7 +135,7 @@ class _OtpPageState extends State<OtpPage> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter the OTP';
                       }
-                      if (value.length != 6) {
+                      if (value.length != 6 ||  !RegExp(RegexConstant.otpOrPincodeValidationRegex).hasMatch(value)) {
                         return 'OTP must be 6 digits';
                       }
                       return null;

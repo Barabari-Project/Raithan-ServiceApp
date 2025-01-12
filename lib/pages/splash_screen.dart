@@ -86,15 +86,10 @@ class SplashScreen extends GetView<SplashScreenController> {
             ],
           ),
           SizedBox(height: 16,),
-      AnimatedOpacity(
-        opacity: 1,
-        duration: Duration(seconds: 2),
-        curve: Curves.easeIn,
-        child: Text(
+          const Text(
           'Raithan',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-      ),
         ],
 
       )

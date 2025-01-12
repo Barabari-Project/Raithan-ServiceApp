@@ -27,6 +27,7 @@ class BusinessController extends GetxController {
   dynamic businessTime = {} ;
   List<String> businessDays = List.empty() ;
   dynamic businessInfo = {};
+  List<String> categories = List.empty();
 
   final ScrollController scrollController = ScrollController();
 
@@ -67,9 +68,11 @@ class BusinessController extends GetxController {
             .toList()
             .cast<String>();
 
+
         businessDetails  = {
-          'Business Name': response["business"]["businessName"],
-          'category' : response["business"]["category"].join(', ') };
+          'Business Name': response["business"]["businessName"]};
+
+        categories = List<String>.from(response["business"]["category"]);
 
         businessAddress = {   'Block Number': response["business"]["blockNumber"],
           'Street': response["business"]["street"],
@@ -84,10 +87,9 @@ class BusinessController extends GetxController {
           'End Time' : response["business"]["workingTime"]['end'],
         };
 
-        // print(businessDetails.length);
       }
     }  catch (e) {
-
+       print(e);
     }
     finally{
       isLoading.value = false;
@@ -105,60 +107,6 @@ class BusinessController extends GetxController {
     });
   }
 
-
-  Future<void> saveUserBusinessDetails() async {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      scrollController.animateTo(
-        scrollController.position.minScrollExtent,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.linear,
-      );
-    });
-
-    savingProfileDetails.value = true;
-
-    try {
-      String filePath = profileImage.value;
-
-      List<String> filePart = filePath.split(".");
-
-      MediaType imageMediaType = MediaType(
-          'image', filePart.last); // Assuming the file is a JPEG image
-
-      dynamic images = isImageUpdated.value
-          ? {'img': FileWithMediaType(File(filePath), imageMediaType)}
-          : null;
-
-      final response =
-          await baseApiServices.postMultipartFilesUploadApiResponse(
-              APIConstants.providerSaveProfileDetails,
-              null,
-              {
-                // 'firstName': firstNameController.value.text,
-                // 'lastName': lastNameController.value.text,
-                // 'yearOfBirth': dobController.value.text,
-                // 'gender': genderController.value.text,
-              },
-              images,
-              true);
-
-      Utils.showSnackbar(
-          "Yeah !", response?["message"], CustomSnackbarStatus.success);
-    } catch (e) {
-      if (e is Exception) {
-        Utils.handleException(e);
-      } else {
-        print(e);
-        Utils.showSnackbar(
-            "Oops !",
-            "Some Thing Went Wrong Please Try Again Later !",
-            CustomSnackbarStatus.error);
-      }
-    } finally {
-      savingProfileDetails.value = false;
-      isEditAllowed.value = false;
-    }
-  }
 
   Future<dynamic> fetchUserBusinessDetails() async {
     isLoading.value = true;

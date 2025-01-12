@@ -9,6 +9,7 @@ import 'package:raithan_serviceapp/common/custom_button.dart';
 import 'package:raithan_serviceapp/controller/profile_controller.dart';
 
 import '../../../Utils/app_colors.dart';
+import '../../../constants/regex_constant.dart';
 
 class Profile extends GetView<ProfileController> {
   Profile({super.key}) {
@@ -106,6 +107,7 @@ class Profile extends GetView<ProfileController> {
                           bottom: AppDimensions.formFieldPadding),
                       child: Container(
                         child: Form(
+                          key: controller.profileDetailsFormKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -124,6 +126,20 @@ class Profile extends GetView<ProfileController> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your first name';
+                                  }
+                                  if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value))
+                                  {
+                                    return 'First Name should contain only letter and space';
+                                  }
+                                  else if(value.length <= 2)
+                                  {
+                                    return "First Name length must be greater than 2";
+                                  }
+                                  return null;
+                                },
                                 onFieldSubmitted: (value) {
                                   Utils.changeNodeFocus(
                                       context,
@@ -147,6 +163,20 @@ class Profile extends GetView<ProfileController> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your first name';
+                                  }
+                                  if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value))
+                                  {
+                                    return 'First Name should contain only letter and space';
+                                  }
+                                  else if(value.length <= 2)
+                                  {
+                                    return "First Name length must be greater than 2";
+                                  }
+                                  return null;
+                                },
                                 onFieldSubmitted: (value) {
                                   Utils.changeNodeFocus(
                                       context,

@@ -93,10 +93,10 @@ class Utils{
       Get.snackbar(
         title,
         message,
-        colorText: AppColors.whiteColor,
+        colorText: AppColors.blackColor,
         backgroundColor: AppColors.warningBackground,
         icon:
-        const Icon(Icons.warning_outlined, color: AppColors.whiteColor),
+        const Icon(Icons.warning_outlined, color: AppColors.blackColor),
       );
     }
   }

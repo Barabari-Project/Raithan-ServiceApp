@@ -5,6 +5,7 @@ import 'package:raithan_serviceapp/Widgets/dobInputField.dart';
 import 'package:raithan_serviceapp/Widgets/dropDownTextFeild.dart';
 import 'package:raithan_serviceapp/Widgets/imageInputFeild.dart';
 import 'package:raithan_serviceapp/Widgets/textField.dart';
+import 'package:raithan_serviceapp/constants/regex_constant.dart';
 
 import '../../../Utils/utils.dart';
 
@@ -77,6 +78,14 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your first name';
                 }
+                if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value))
+                  {
+                    return 'First Name should contain only letter and space';
+                  }
+                else if(value.length <= 2)
+                {
+                  return "First Name length must be greater than 2";
+                }
                 return null;
               },
             ),
@@ -84,7 +93,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
             CustomTextfield(
               controller: widget.lastNameController,
               type: TextInputType.name,
-              label: "Second Name",
+              label: "Last Name",
               focusNode: widget.lastNameFocusNode,
               onFieldSubmitted: (value) {
                 Utils.changeNodeFocus(
@@ -94,8 +103,15 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your second name';
+                  return 'Please enter your Last name';
                 }
+                if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value)) {
+                  return 'Last Name should contain only letter and space';
+                }
+                else if(value.length <= 2)
+                  {
+                    return "Last Name length must be greater than 2";
+                  }
                 return null;
               },
             ),

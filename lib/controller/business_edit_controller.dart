@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:raithan_serviceapp/constants/enums/business_category.dart';
 import 'package:raithan_serviceapp/controller/business_controller.dart';
 
 import '../Utils/utils.dart';
@@ -46,6 +47,8 @@ class BusinessEditController extends GetxController{
     "Sunday": false,
   };
 
+  Map<String,bool> categories = {};
+
   @override
   void onInit() {
     super.onInit();
@@ -64,8 +67,18 @@ class BusinessEditController extends GetxController{
 
     workingDays = Map<String, bool>.from(businessDetails["workingDays"] ?? {});
 
+    categories = Map.fromEntries(
+          BusinessCategory.values.map((category) {
+            return MapEntry(category.name, false);
+          }),
+        );
 
-    startTimeController.value = TextEditingValue(text: businessDetails["workingTime"]['start']);
+        for (var category in businessDetails["category"]) {
+          if (categories.containsKey(category)) {
+            categories[category] = true;
+          }
+        }
+        startTimeController.value = TextEditingValue(text: businessDetails["workingTime"]['start']);
     endTimeController.value = TextEditingValue(text: businessDetails["workingTime"]['end']);
       }
   }
@@ -79,7 +92,15 @@ class BusinessEditController extends GetxController{
   void saveBusinessDetails() async
   {
 
-    if (businessDetailFormKey.currentState?.validate() ?? false) {
+
+    if(!categories.containsValue(true))
+      {
+        Utils.showSnackbar("Almost There!", "Please select Atleast one business category", CustomSnackbarStatus.warning);
+        return;
+      }
+
+
+    if (businessDetailFormKey.currentState?.validate() ?? false ) {
 
       try {
         Map<String, String> workingTime = {
@@ -98,7 +119,10 @@ class BusinessEditController extends GetxController{
           "state": stateController.text,
           "workingDays": workingDays,
           "workingTime": workingTime,
-          "category": categoryController.text,
+          "category": categories.entries
+              .where((entry) => entry.value == true)  // Filter for entries where value is true
+              .map((entry) => entry.key)  // Extract the key from the filtered entries
+              .toList(),
         };
         final response = await baseApiServices.getPutApiResponse(
             "${APIConstants.baseUrl}${APIConstants.providerSaveBusinessDetails}",
@@ -128,7 +152,7 @@ class BusinessEditController extends GetxController{
         savingBusinessDetails.value = false;
       }
     } else {
-       print("not valid");
+
       Utils.showSnackbar("Almost There!", "Please write valid details", CustomSnackbarStatus.warning);
     }
   }

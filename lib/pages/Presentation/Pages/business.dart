@@ -49,32 +49,44 @@ class Business extends GetView<BusinessController> {
                                   )
                                 ],
                               ),
-                              ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: controller.businessDetails.length,
-                                separatorBuilder: (context, index) {
-                                  return Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: AppDimensions.formFieldPadding,
-                                        vertical: 0),
-                                    child: Divider(),
-                                  );
-                                },
-                                itemBuilder: (context, index) {
-                                  String label = controller.businessDetails.keys
-                                      .elementAt(index);
-                                  String value =
-                                      controller.businessDetails[label]!;
-                                  return BusinessInfoTile(
-                                    label: label,
-                                    value: value,
-                                    isFirst: index == 0,
-                                    isLast: index ==
-                                        (controller.businessDetails.length - 1),
-                                  );
-                                },
+                              BusinessInfoTile(
+                                label: 'Business Name',
+                                value: controller.businessDetails['Business Name'],
+                                isFirst: true,
+                                isLast: true,
                               ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: AppDimensions.formFieldPadding,vertical: 0),
+                                child: Container(
+                                  height: 1,
+                                  decoration: BoxDecoration(border: Border.all(width: 1.0,color: Colors.grey)),
+                                ),
+                              ),
+                              SizedBox(height: AppDimensions.formFieldPadding*0.5,),
+                              const Text(
+                                "Categories",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: AppDimensions.formFieldPadding*0.25,),
+                              Padding(
+                                padding:  EdgeInsets.symmetric(horizontal: AppDimensions.formFieldPadding),
+                                child: Wrap(
+                                  spacing: AppDimensions.formFieldPadding ,
+                                  // Horizontal spacing between children
+                                  runSpacing:
+                                  AppDimensions.formFieldPadding * 0.5,
+                                  // Vertical spacing between lines
+                                  alignment: WrapAlignment.center,
+                                  children: controller.categories
+                                      .map((day) => Text(
+                                        day,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w500),
+                                      ))
+                                      .toList(),
+                                ),
+                              ),
+                              SizedBox(height: AppDimensions.formFieldPadding*0.5,)
                             ],
                           ),
                         ),
@@ -222,24 +234,23 @@ class Business extends GetView<BusinessController> {
                               SizedBox(
                                 height: AppDimensions.formFieldPadding * 0.5,
                               ),
-                              Wrap(
-                                spacing: AppDimensions.formFieldPadding * 0.5,
-                                // Horizontal spacing between children
-                                runSpacing:
-                                    AppDimensions.formFieldPadding * 0.5,
-                                // Vertical spacing between lines
-                                alignment: WrapAlignment.center,
-                                children: controller.businessDays
-                                    .map((day) => Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 4.0),
-                                          child: Text(
-                                            day,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ))
-                                    .toList(),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: AppDimensions.formFieldPadding),
+                                child: Wrap(
+                                  spacing: AppDimensions.formFieldPadding ,
+                                  // Horizontal spacing between children
+                                  runSpacing:
+                                      AppDimensions.formFieldPadding * 0.5,
+                                  // Vertical spacing between lines
+                                  alignment: WrapAlignment.center,
+                                  children: controller.businessDays
+                                      .map((day) => Text(
+                                        day,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w500),
+                                      ))
+                                      .toList(),
+                                ),
                               ),
                               SizedBox(
                                 height: AppDimensions.formFieldPadding * 0.5,
@@ -311,7 +322,7 @@ class BusinessInfoTile extends StatelessWidget {
           Expanded(
               child: Text(
             value, textAlign: TextAlign.right,
-            maxLines: 2,
+            maxLines: 4,
             // Limits the text to 2 lines
             overflow: TextOverflow.ellipsis,
           )),
