@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
+import 'package:raithan_serviceapp/Utils/geo_position.dart';
 import 'package:raithan_serviceapp/Utils/storage.dart';
 import 'package:raithan_serviceapp/Utils/utils.dart';
 import 'package:raithan_serviceapp/constants/api_constants.dart';
@@ -250,14 +252,32 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
+  void _saveCoordinates() async {
+
+  }
+
   void _submitBusinessDetails() async {
+
     if (_businessDetailFormKey.currentState?.validate() ?? false) {
       scrollController.animateTo(
         0, // Scroll to top (offset 0)
         duration: Duration(milliseconds: 300), // Smooth scroll duration
         curve: Curves.easeInOut, // Scroll curve
       );
+
+      Position? position;
+
+
+      try {
+        position = await GeoPoistion.determinePosition();
+      }  catch (e) {
+        Utils.showSnackbar("Almost There!", "Please Allow Location Permission",
+            CustomSnackbarStatus.warning);
+        return;
+      }
+
       _showLoading();
+
       try {
         Map<String, String> workingTime = {
           "start": _startTimeController.text,
@@ -275,6 +295,10 @@ class _RegistrationState extends State<Registration> {
           "state": _stateController.text,
           "workingDays": workingDays,
           "workingTime": workingTime,
+          "location" : {
+            'lat' : position.latitude,
+            'lng' : position.longitude
+          },
           "category": categories.entries
               .where((entry) => entry.value == true)  // Filter for entries where value is true
               .map((entry) => entry.key)  // Extract the key from the filtered entries
@@ -293,6 +317,7 @@ class _RegistrationState extends State<Registration> {
         Utils.showSnackbar(
             "Yeah !", response["message"], CustomSnackbarStatus.success);
 
+        print(response);
         AuthController authController = Get.find();
         authController.activeSession.value = true;
         authController.userRole.value = "PROVIDER";

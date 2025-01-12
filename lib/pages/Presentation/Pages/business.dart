@@ -259,28 +259,56 @@ class Business extends GetView<BusinessController> {
                           ),
                         ),
                       ),
-                      CustomButton(
-                          isPrimary: true,
-                          width: 100,
-                          onPressed: ()
-                          {
-                            Get.toNamed(RouteName.businessEdit,arguments: controller.businessInfo);
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.edit,
-                                color: AppColors.whiteColor,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "Edit",
-                                style: TextStyle(color: AppColors.whiteColor),
-                              ),
-                            ],
-                          )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomButton(
+                              isPrimary: true,
+                              width: 180,
+                              isLoading: controller.savingBusinessLocation.value,
+                              onPressed: ()
+                              {
+                                controller.askUpdateLocationConfirmation(context);},
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    color: AppColors.whiteColor,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "Update Location",
+                                    style: TextStyle(color: AppColors.whiteColor),
+                                  ),
+                                ],
+                              )),
+                          SizedBox(width: AppDimensions.formFieldPadding,),
+                          CustomButton(
+                              isPrimary: true,
+                              width: 100,
+                              onPressed: ()
+                              {
+                                Get.toNamed(RouteName.businessEdit,arguments: controller.businessInfo);
+                              },
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: AppColors.whiteColor,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "Edit",
+                                    style: TextStyle(color: AppColors.whiteColor),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
                 SizedBox(
                   height: AppDimensions.formFieldPadding ,
                 ),

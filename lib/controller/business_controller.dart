@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:raithan_serviceapp/constants/api_constants.dart';
@@ -10,6 +12,7 @@ import 'package:raithan_serviceapp/network/BaseApiServices.dart';
 import 'package:raithan_serviceapp/network/NetworkApiService.dart';
 import 'package:raithan_serviceapp/utils/storage.dart';
 
+import '../Utils/geo_position.dart';
 import '../Utils/utils.dart';
 import '../constants/enums/custom_snackbar_status.dart';
 
@@ -19,6 +22,7 @@ class BusinessController extends GetxController {
   RxBool savingProfileDetails = false.obs;
   RxString profileImage = "".obs;
   RxBool isImageUpdated = false.obs;
+  RxBool savingBusinessLocation = false.obs;
 
 
 
@@ -51,6 +55,86 @@ class BusinessController extends GetxController {
     super.onInit();
     dynamic response = await fetchUserBusinessDetails();
     setBusinessDetails(response);
+  }
+
+  void askUpdateLocationConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevents dismissal by tapping outside the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Update Location'),
+          content: Text('Do you want to change business location?'), // Question to ask
+          actions: <Widget>[
+            // "Yes" button
+            TextButton(
+              onPressed: () {
+
+                Get.back();
+              },
+              child: Text('No'),
+            ),
+            // "No" button
+            TextButton(
+              onPressed: () {
+                updateBusinessLocation();
+                Get.back();
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void updateBusinessLocation() async {
+    Position? position;
+
+    savingBusinessLocation.value = true;
+
+    try {
+      position = await GeoPoistion.determinePosition();
+    } catch (e) {
+      Utils.showSnackbar("Almost There!", "Please Allow Location Permission",
+          CustomSnackbarStatus.warning);
+      return;
+    }
+
+
+
+    try {
+      final response = await baseApiServices.getPostApiResponse(
+          "${APIConstants.baseUrl}${APIConstants.providerCoordinates}",
+          {
+            'Content-Type': 'application/json',
+          },
+          jsonEncode({
+            'lat': position.latitude,
+            'lng': position.longitude
+          }),
+          null,
+          true);
+      Utils.showSnackbar(
+          "Yeah !",
+          response["message"],
+          CustomSnackbarStatus.error);
+
+    }
+    catch (e) {
+      if (e is Exception) {
+
+        Utils.handleException(e);
+      } else {
+        Utils.showSnackbar(
+            "Oops !",
+            "Some Thing Went Wrong Please Try Again Later !",
+            CustomSnackbarStatus.error);
+      }
+    }
+    finally{
+      savingBusinessLocation.value = false;
+    }
   }
 
   void setBusinessDetails(dynamic response)
@@ -89,7 +173,10 @@ class BusinessController extends GetxController {
 
       }
     }  catch (e) {
-       print(e);
+      Utils.showSnackbar(
+          "Oops !",
+          "Some Thing Went Wrong Please Try Again Later !",
+          CustomSnackbarStatus.error);
     }
     finally{
       isLoading.value = false;

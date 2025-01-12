@@ -20,5 +20,7 @@ class APIConstants{
 
    static const String providerGetBusinessDetails = "/raithan/api/business/user/";
 
+   static const String providerCoordinates = "/raithan/api/business/location";
+
 
 }

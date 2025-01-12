@@ -70,6 +70,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
   late FocusNode cityFocusNode;
   late FocusNode stateFocusNode;
   late FocusNode categoryFocusNode;
+  late FocusNode workingTimeFocusNode;
 
   void initState() {
     super.initState();
@@ -84,6 +85,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
     cityFocusNode = FocusNode();
     stateFocusNode = FocusNode();
     categoryFocusNode = FocusNode();
+    workingTimeFocusNode = FocusNode();
 
   }
 
@@ -176,6 +178,13 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               child: Theme(
                 data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
+                  onExpansionChanged: (isExpanding)
+                    {
+                       if(isExpanding)
+                         {
+                           FocusScope.of(context).requestFocus(categoryFocusNode);
+                         }
+                    },
                     tilePadding: EdgeInsets.zero, // Removes padding around the tile
                     collapsedBackgroundColor: Colors.transparent,
                     title: const Text("Select Business Categories",  style: TextStyle(
@@ -430,6 +439,13 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 child: Theme(
                   data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
+                      onExpansionChanged: (isExpansion)
+                      {
+                        if(isExpansion)
+                          {
+                            FocusScope.of(context).requestFocus(workingTimeFocusNode);
+                          }
+                      },
                       tilePadding: EdgeInsets.zero, // Removes padding around the tile
                       collapsedBackgroundColor: Colors.transparent,
                     title: const Text("Select Working Days",  style: TextStyle(

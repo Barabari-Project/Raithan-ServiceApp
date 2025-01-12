@@ -36,7 +36,7 @@ class SplashScreen extends GetView<SplashScreenController> {
       {
           authController.activeSession.value = true;
 
-          if(userRole == "PROVIDER")
+          if(userRole != null && userRole == "PROVIDER")
             {
                if(currentPhase == null)
                  {

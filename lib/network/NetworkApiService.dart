@@ -24,6 +24,7 @@ class NetworkApiService extends BaseApiServices {
       headers['Authorization'] = 'Baerer $jwtToken';
       return headers;
     }
+    print(jwtToken);
 
     Map<String, String> authHeader = HashMap();
     authHeader['Authorization'] = 'Baerer $jwtToken';
@@ -155,9 +156,9 @@ class NetworkApiService extends BaseApiServices {
   dynamic returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
-        return jsonDecode(response.body);
+        return response.body.isNotEmpty ? jsonDecode(response.body) : {} ;
       case 201:
-        return jsonDecode(response.body);
+        return response.body.isNotEmpty ? jsonDecode(response.body) : {} ;
       case 204:
         return null;
       case 401:
