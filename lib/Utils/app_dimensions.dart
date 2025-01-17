@@ -7,9 +7,11 @@ class AppDimensions{
 
   static double height = Get.height;
 
-  static double formFieldPadding = width*0.05;
-  static double cardDetailsPadding = width*0.01;
-  static double dropDownMenuFullWidth = width*0.9;
+  static double formFieldPadding = Get.width*0.05;
+
+  static double cardDetailsPadding = Get.width*0.01;
+
+  static double dropDownMenuFullWidth = Get.width*0.9;
 
   static const double auth_screen_padding = 20;
 
@@ -23,6 +25,6 @@ class AppDimensions{
 
   static const double extraLargeFontSize = 20;
 
-  static double splashScreenImageWidth = width*0.5;
+  static double splashScreenImageWidth = Get.width*0.5;
 
 }

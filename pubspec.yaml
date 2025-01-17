@@ -47,6 +47,9 @@ dependencies:
   shimmer: ^3.0.0
   geolocator: ^13.0.2
   flutter_launcher_icons: ^0.14.2
+  carousel_slider: ^5.0.0
+  flutter_rating_bar: ^4.0.0
+  widget_zoom: ^0.0.4
 
 
 
@@ -78,6 +81,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/logo/
+    - assets/images/category/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

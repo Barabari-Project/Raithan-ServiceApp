@@ -116,4 +116,30 @@ class Utils{
   }
 
 
+  static Color getBackgroundColorByIndex(int index) {
+    List<Color> colors = [
+      Colors.purple.shade200.withValues(alpha: 0.2),
+      Colors.orange.shade200.withValues(alpha: 0.2),
+      Colors.green.shade200.withValues(alpha: 0.2),
+      Colors.blue.shade200.withValues(alpha: 0.2),
+      Colors.red.shade200.withValues(alpha: 0.2),
+
+    ];
+
+    return colors[index % colors.length];
+  }
+
+  static Color getColorByIndex(int index) {
+    List<Color> colors = [
+      Colors.purple.shade800,
+      Colors.orange.shade800,
+      Colors.green.shade800,
+      Colors.blue.shade800,
+      Colors.red.shade800,
+
+    ];
+
+    return colors[index % colors.length];
+  }
+
 }

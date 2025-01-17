@@ -20,11 +20,11 @@ class NetworkApiService extends BaseApiServices {
 
     String? jwtToken = await Storage.getValue(StorageKeys.JWT_TOKEN);
 
+    print(jwtToken);
     if (headers != null) {
       headers['Authorization'] = 'Baerer $jwtToken';
       return headers;
     }
-    print(jwtToken);
 
     Map<String, String> authHeader = HashMap();
     authHeader['Authorization'] = 'Baerer $jwtToken';
@@ -35,7 +35,6 @@ class NetworkApiService extends BaseApiServices {
   Future getGetApiResponse(String url, Map<String, String>? headers,
       bool authenticationRequired) async {
     dynamic responsejson;
-
     try {
       final response = await http
           .get(Uri.parse(url),

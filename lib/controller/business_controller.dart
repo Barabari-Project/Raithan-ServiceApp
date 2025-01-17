@@ -69,8 +69,7 @@ class BusinessController extends GetxController {
             // "Yes" button
             TextButton(
               onPressed: () {
-
-                Get.back();
+                Navigator.of(context).pop();
               },
               child: Text('No'),
             ),
@@ -78,7 +77,7 @@ class BusinessController extends GetxController {
             TextButton(
               onPressed: () {
                 updateBusinessLocation();
-                Get.back();
+                Navigator.of(context).pop();
               },
               child: Text('Yes'),
             ),
@@ -118,7 +117,7 @@ class BusinessController extends GetxController {
       Utils.showSnackbar(
           "Yeah !",
           response["message"],
-          CustomSnackbarStatus.error);
+          CustomSnackbarStatus.success);
 
     }
     catch (e) {

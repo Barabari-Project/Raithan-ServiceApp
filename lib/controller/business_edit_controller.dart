@@ -93,7 +93,7 @@ class BusinessEditController extends GetxController{
   }
 
 
-  void saveBusinessDetails() async
+  void saveBusinessDetails(BuildContext context) async
   {
 
 
@@ -138,9 +138,9 @@ class BusinessEditController extends GetxController{
             true);
 
 
-        Get.back();
         setBusinessDetails(response);
         Utils.showSnackbar("Yeah !", response["message"], CustomSnackbarStatus.success);
+        Navigator.of(context).pop();
 
       } catch (e) {
 

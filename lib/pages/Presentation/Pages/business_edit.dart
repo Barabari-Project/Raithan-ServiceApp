@@ -61,7 +61,7 @@ class BusinessEdit extends GetView<BusinessEditController> {
                           isPrimary: false,
                           width: 100,
                           onPressed: () {
-                            Get.back();
+                            Navigator.of(context).pop();
                           },
                         ),
                         SizedBox(
@@ -72,7 +72,7 @@ class BusinessEdit extends GetView<BusinessEditController> {
                           isPrimary: true,
                           width: 200,
                           onPressed: () {
-                            controller.saveBusinessDetails();
+                            controller.saveBusinessDetails(context);
                           },
                           isLoading:
                           controller.savingBusinessDetails.value,
