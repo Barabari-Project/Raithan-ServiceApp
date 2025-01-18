@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
 import 'package:raithan_serviceapp/constants/enums/image_type.dart';
 
 import '../Utils/utils.dart';
@@ -31,12 +32,20 @@ class _CustomImageFieldState extends State<CustomImageField> {
       allowedExtensions: ['jpg', 'jpeg', 'png'],
     );
 
+
     if (result != null && result.files.single.path != null) {
-      setState(() {
-        _filePath = result.files.single.path;
-        widget.controller.text = _filePath!;
-        widget.isUpdated = true;
-      });
+      const int maxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+      if(result.files.single.size > maxFileSizeInBytes) {
+        Utils.showSnackbar("Oops !", "File size must be less then 5MB", CustomSnackbarStatus.warning);
+      }
+      else {
+        setState(() {
+          _filePath = result.files.single.path;
+          widget.controller.value =  TextEditingValue(text:_filePath!);
+          widget.isUpdated = true;
+        });
+      }
     }
   }
 
@@ -45,7 +54,6 @@ class _CustomImageFieldState extends State<CustomImageField> {
     return TextFormField(
       controller: widget.controller,
       readOnly: true,
-      // Prevents the keyboard from appearing
       cursorColor: Colors.black,
       style: const TextStyle(
         color: Colors.black, // Explicit text color set to black
@@ -53,10 +61,11 @@ class _CustomImageFieldState extends State<CustomImageField> {
         fontWeight: FontWeight.bold,
       ),
       validator: (value){
-        if(!widget.isUpdated && widget.url == null)
+        if(widget.controller.text == "" && widget.url == null)
           {
             return "Please Select Image";
           }
+        return null;
       },
       decoration: InputDecoration(
         labelText: widget.title,
