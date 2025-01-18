@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:raithan_serviceapp/constants/routes/route_name.dart';
 import 'package:raithan_serviceapp/pages/Presentation/Pages/business.dart';
 import 'package:raithan_serviceapp/pages/Presentation/Pages/business_edit.dart';
+import 'package:raithan_serviceapp/pages/Presentation/Pages/labor_edit.dart';
 import 'package:raithan_serviceapp/pages/Presentation/ProductList.dart';
 import 'package:raithan_serviceapp/pages/splash_screen.dart';
 
@@ -20,5 +21,7 @@ class AppRoutes {
         GetPage(name: RouteName.business, page: () => Business()),
         GetPage(name: RouteName.businessEdit, page: () => BusinessEdit()),
         GetPage(name: RouteName.products, page: () => ProductList()),
+        GetPage(name: RouteName.editLaborDetails, page: () => LaborEdit()),
+
       ];
 }

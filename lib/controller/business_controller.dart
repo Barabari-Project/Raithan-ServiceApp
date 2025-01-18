@@ -97,6 +97,7 @@ class BusinessController extends GetxController {
     } catch (e) {
       Utils.showSnackbar("Almost There!", "Please Allow Location Permission",
           CustomSnackbarStatus.warning);
+      savingBusinessLocation.value = false;
       return;
     }
 

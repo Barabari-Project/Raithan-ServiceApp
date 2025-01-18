@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -30,23 +29,11 @@ class LaborItemCard extends StatelessWidget {
               width: double.infinity,
             ),
           ),
-          // Image Carousel
-          // cs.CarouselSlider(
-          //   options: cs.CarouselOptions(
-          //     height: 200.0,
-          //     autoPlay: true,
-          //     enlargeCenterPage: true,
-          //   ),
-          //   items: agricultureLabor.imageUrls.map((url) {
-          //     return ;
-          //   }).toList(),
-          // ),
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // eShramCardNumber
                 Row(
                   children: [
                     Text(
@@ -112,7 +99,7 @@ class LaborItemCard extends StatelessWidget {
                     Color frontColor = Utils.getColorByIndex(index);
 
                     return Chip(
-                      padding: EdgeInsets.all(3),
+                      padding: const EdgeInsets.all(3),
                       backgroundColor: baseColor,
                       label: Text(
                         agricultureLabor.services[index].serviceName,
@@ -133,7 +120,7 @@ class LaborItemCard extends StatelessWidget {
                     );
                   }),
                 ),
-                SizedBox(height: 5.0), // Average Rating
+                const SizedBox(height: 5.0), // Average Rating
                 Row(
                   children: [
                     RatingBarIndicator(
@@ -146,14 +133,14 @@ class LaborItemCard extends StatelessWidget {
                       itemSize: 20.0,
                       direction: Axis.horizontal,
                     ),
-                    SizedBox(width: 5.0),
+                   const SizedBox(width: 5.0),
                     Text('${agricultureLabor.avgRating}'),
-                    Expanded(child: SizedBox()),
+                   const Expanded(child: SizedBox()),
                     OutlinedButton(
                         onPressed: () {},
                         style: ButtonStyle(
                           padding: WidgetStateProperty.all<EdgeInsets>(
-                              EdgeInsets.symmetric(
+                             const  EdgeInsets.symmetric(
                                   vertical: 0, horizontal: 15)),
                           shape:
                           WidgetStateProperty.all<RoundedRectangleBorder>(

@@ -3,12 +3,10 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:raithan_serviceapp/constants/enums/business_category.dart';
 import 'package:raithan_serviceapp/controller/business_controller.dart';
 
-import '../Utils/geo_position.dart';
 import '../Utils/utils.dart';
 import '../constants/api_constants.dart';
 import '../constants/enums/custom_snackbar_status.dart';

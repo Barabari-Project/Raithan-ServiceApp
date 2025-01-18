@@ -24,5 +24,7 @@ class APIConstants{
 
    static const String providerGetProductsDetails = "/raithan/api/service-providers/products";
 
+   static const String saveLaborDetails = "/";
+
 
 }

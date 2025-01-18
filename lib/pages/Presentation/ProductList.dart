@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/utils.dart';
+import 'package:raithan_serviceapp/constants/routes/route_name.dart';
 import 'package:raithan_serviceapp/controller/product_list_controller.dart';
 import 'package:raithan_serviceapp/dtos/agriculture_dto.dart';
 
@@ -23,7 +24,9 @@ class ProductList extends GetView<ProductListController> {
       floatingActionButton: Obx(() {
         if (!controller.isLoading.value) {
           return FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(RouteName.editLaborDetails, arguments:  {"businessType" : businessType});
+            },
             backgroundColor: const Color.fromRGBO(18, 130, 105, 1),
             mini: true,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

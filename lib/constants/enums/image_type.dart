@@ -1,0 +1,3 @@
+enum ImageType{
+     ASSET_IMAGE,NETWORK_IMAGE,FILE_IMAGE
+}
