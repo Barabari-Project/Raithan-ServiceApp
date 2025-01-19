@@ -53,17 +53,28 @@ class ProductEdit extends GetView<ProductEditController> {
                         ),
                         CustomTextfield(
                             focusNode: controller.modelNoFocusNode,
-                            type: TextInputType.number,
+                            type: TextInputType.text,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Please Model Number";
+                                return "Please write Model Number";
                               }
                               return null; // No errors
                             },
                             onFieldSubmitted: (value)
                             {
-                              // Utils.changeNodeFocus(context, controller.shramCardNumberFocusNode, controller.serviceTypeFocusNode);
-                            },
+                              if(controller.businessType.value != BusinessCategory.DRONES.name) {
+                                      Utils.changeNodeFocus(
+                                          context,
+                                          controller.modelNoFocusNode,
+                                          controller.hpFocusNode);
+                                    }
+                              else{
+                                Utils.changeNodeFocus(
+                                    context,
+                                    controller.modelNoFocusNode,
+                                    controller.typeFocusNode);
+                              }
+                              },
                             controller: controller.modelNoController,
                             label: "Model No"),
                         sizedBox(),
@@ -82,7 +93,12 @@ class ProductEdit extends GetView<ProductEditController> {
                             },
                             onFieldSubmitted: (value)
                             {
-                              // Utils.changeNodeFocus(context, controller.shramCardNumberFocusNode, controller.serviceTypeFocusNode);
+                               controller.hpFocusNode.unfocus();
+                               if(controller.businessType.value == BusinessCategory.HARVESTORS.name
+                                   || controller.businessType.value == BusinessCategory.EARTH_MOVERS.name)
+                                 {
+                                   FocusScope.of(context).requestFocus(controller.typeFocusNode);
+                                 }
                             },
                             controller: controller.hpController,
                             label: "Horse Power"),

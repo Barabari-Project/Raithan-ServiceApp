@@ -1,13 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
+import 'package:raithan_serviceapp/constants/routes/route_name.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../Utils/utils.dart';
+import '../../constants/enums/image_type.dart';
 import '../../dtos/agriculture_dto.dart';
 
 class LaborItemCard extends StatelessWidget {
   final AgricultureLabor agricultureLabor;
+  final String businessType;
 
-  LaborItemCard({Key? key, required this.agricultureLabor}) : super(key: key);
+  LaborItemCard({Key? key, required this.agricultureLabor, required this.businessType}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +26,16 @@ class LaborItemCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: Image.network(
-              height: 200,
-              agricultureLabor.imageUrls.first,
-              fit: BoxFit.cover,
-              width: double.infinity,
+          Container(
+            height: 200,
+            child: GestureDetector(
+                onTap: () {
+                  Utils.showImagePopup(context, agricultureLabor.imageUrls.first, ImageType.NETWORK_IMAGE);
+                },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Utils.getCachedNetworkImage(agricultureLabor.imageUrls.first),
+              ),
             ),
           ),
           Padding(
@@ -137,7 +146,14 @@ class LaborItemCard extends StatelessWidget {
                     Text('${agricultureLabor.avgRating}'),
                    const Expanded(child: SizedBox()),
                     OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed(RouteName.editLaborDetails,arguments: {
+                            'businessType' : businessType,
+                            'isEdit' : true,
+                            'productDetails' : agricultureLabor
+                          });
+
+                        },
                         style: ButtonStyle(
                           padding: WidgetStateProperty.all<EdgeInsets>(
                              const  EdgeInsets.symmetric(

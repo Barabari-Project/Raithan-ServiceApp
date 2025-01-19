@@ -61,7 +61,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submitPhone(BuildContext context) async {
     if (_phoneFormKey.currentState?.validate() ?? false) {
-      _showLoading();
+
+      Utils.showBackDropLoading(context);
 
       try {
 
@@ -91,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
       } finally {
-        _hideLoading();
+        Navigator.of(context).pop();
       }
     } else {
       Utils.showSnackbar("Almost There!", "Please write valid Phone Number",
@@ -99,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _submitOtp() async {
+  void _submitOtp(BuildContext context) async {
     if (_otpFormKey.currentState?.validate() ?? false) {
-      _showLoading();
+      Utils.showBackDropLoading(context);
       try {
 
         final response = await baseApiServices.getPostApiResponse(
@@ -117,16 +118,35 @@ class _LoginScreenState extends State<LoginScreen> {
             false);
 
 
+        String status = response["provider"]["status"];
+
+
+
         AuthController authController = Get.find();
         authController.activeSession.value = true;
         authController.userRole.value = "PROVIDER";
+
         String jwtToken = response['token'];
         Storage.saveValue(StorageKeys.USER_ROLE, "PROVIDER");
         Storage.saveValue(StorageKeys.JWT_TOKEN, jwtToken);
         Storage.saveValue(StorageKeys.USER_ID, response["provider"]["_id"]);
         Utils.showSnackbar("Yeah !", response["message"], CustomSnackbarStatus.success);
-        Get.offAllNamed(RouteName.provider_home);
 
+        if(status == "otp_verified")
+        {
+          Storage.saveValue(StorageKeys.CURRENT_PHASE, "2");
+          Get.offAllNamed(RouteName.registration);
+          return;
+        }
+        else if(status == "business_details_remaining")
+        {
+          Storage.saveValue(StorageKeys.CURRENT_PHASE, "3");
+          Get.offAllNamed(RouteName.registration);
+          return;
+        }
+
+        Storage.removeKey(StorageKeys.CURRENT_PHASE);
+        Get.offAllNamed(RouteName.provider_home);
 
       } catch (e) {
         if (e is Exception) {
@@ -137,8 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
               "Some Thing Went Wrong Please Try Again Later !",
               CustomSnackbarStatus.error);
         }
-      } finally {
-        _hideLoading();
+        Navigator.of(context).pop();
       }
     } else {
       Utils.showSnackbar("Almost There!", "Please write valid OTP",
@@ -360,7 +379,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (currentPhase == 0) {
                                   _submitPhone(context);
                                 } else {
-                                  _submitOtp();
+                                  _submitOtp(context);
                                 }
                               });
                             },

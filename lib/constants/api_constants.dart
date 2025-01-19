@@ -24,7 +24,16 @@ class APIConstants{
 
    static const String providerGetProductsDetails = "/raithan/api/service-providers/products";
 
-   static const String saveLaborDetails = "/";
+   static const String saveDroneDetails = "/raithan/api/products/create/drones";
 
+   static const String saveProductDetails = "/raithan/api/products/create/vehicle";
+
+   static const String editDroneDetails = "/raithan/api/products/update/drones";
+
+   static const String editProductDetails = "/raithan/api/products/update/vehicle";
+
+   static const String saveLaborDetails = "/raithan/api/products/create/labour-mechanics";
+
+   static const String editLaborDetails = "/raithan/api/products/update/labour-mechanics";
 
 }

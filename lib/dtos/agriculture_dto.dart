@@ -5,10 +5,12 @@ class AgricultureLabor {
   final bool readyToTravelIn10Km;
   final bool isIndividual;
   final List<AgricultureLaborServiceType> services;
+  final Map<String,String> imageWithTitle;
   final int numberOfWorkers;
   final ProductStatus verificationStatus;
   final double avgRating;
   final List<String> imageUrls;
+  final String id;
 
   AgricultureLabor({
     required this.eShramCardNumber,
@@ -19,6 +21,8 @@ class AgricultureLabor {
     required this.verificationStatus,
     required this.avgRating,
     required this.imageUrls,
+    required this.id,
+    required this.imageWithTitle
   });
 
   factory AgricultureLabor.fromJson(Map<String, dynamic> json) {
@@ -32,7 +36,9 @@ class AgricultureLabor {
       numberOfWorkers: json['numberOfWorkers'],
       verificationStatus: ProductStatus.fromJson({'status': json['verificationStatus']}),
       avgRating: (json['avgRating'] as num).toDouble(),
-      imageUrls: List<String>.from(json['images']),
+      imageUrls: List<String>.from(json['images'].values),
+      imageWithTitle: Map<String,String>.from(json['images']),
+      id: json['_id']
     );
   }
 }

@@ -268,7 +268,8 @@ class Business extends GetView<BusinessController> {
                               isLoading: controller.savingBusinessLocation.value,
                               onPressed: ()
                               {
-                                controller.askUpdateLocationConfirmation(context);},
+                                controller.askUpdateLocationConfirmation(context);
+                                },
                               child: const Row(
                                 children: [
                                   Icon(

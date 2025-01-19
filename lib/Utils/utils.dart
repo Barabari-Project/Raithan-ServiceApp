@@ -1,18 +1,66 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
 import 'package:raithan_serviceapp/constants/enums/image_type.dart';
 import 'package:raithan_serviceapp/network/app_exception.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:widget_zoom/widget_zoom.dart';
 
 import '../constants/routes/route_name.dart';
 import 'app_colors.dart';
 
 class Utils {
+  static Future<void> clearImageCache(String url) async {
+    await DefaultCacheManager().removeFile(url);
+  }
+
+  static CachedNetworkImage getCachedNetworkImage(String url) {
+    return CachedNetworkImage(
+      imageUrl: url,
+      fit: BoxFit.fitWidth,
+      width: double.infinity,
+      errorWidget: (context, url, error) {
+        return const Text("Image Not Found");
+      },
+      placeholder: (context, url) {
+        return Shimmer.fromColors(
+            baseColor: const Color.fromARGB(255, 216, 216, 216),
+            highlightColor: const Color.fromARGB(255, 255, 255, 255),
+            child: Container(
+              color: Colors.amber,
+            ));
+      },
+    );
+  }
+
+  static CachedNetworkImage getCachedNetworkImageForProfile(String url,
+      {Widget Function(BuildContext, ImageProvider<Object>)? imageBuilder =
+          null}) {
+    return CachedNetworkImage(
+      imageUrl: url,
+      fit: BoxFit.fitWidth,
+      width: double.infinity,
+      errorWidget: (context, url, error) {
+        return const Text("Image Not Found");
+      },
+      imageBuilder: imageBuilder,
+      placeholder: (context, url) => Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: CircleAvatar(
+          radius: AppDimensions.width * 0.2 - 4, // Same radius as image
+          backgroundColor: Colors.grey[300], // Placeholder shimmer color
+        ),
+      ),
+    );
+  }
+
   static changeNodeFocus(
       BuildContext context, FocusNode current, FocusNode target) {
     current.unfocus();
@@ -131,28 +179,31 @@ class Utils {
     return colors[index % colors.length];
   }
 
-  static void showImagePopup(BuildContext context, url, ImageType imageType) {
+  static String getFileType(String filePath) {
+    return filePath.split(".").last;
+  }
 
-    dynamic image ;
-    if(imageType == ImageType.ASSET_IMAGE)
-      {
-        image = Image.asset( url,
-          fit: BoxFit.contain,
-          width: double.infinity,
-        );
-      }
-    else if(imageType == ImageType.FILE_IMAGE)
-      {
-        image = Image.file( File(url),
-          fit: BoxFit.contain,
-          width: double.infinity,
-        );
-      }
-    else{
-      image = Image.network( url,
+  static String addCacheBustingParameter(String url) {
+    final separator = url.contains('?') ? '&' : '?';
+    return '$url${separator}timestamp=${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  static void showImagePopup(BuildContext context, url, ImageType imageType) {
+    dynamic image;
+    if (imageType == ImageType.ASSET_IMAGE) {
+      image = Image.asset(
+        url,
         fit: BoxFit.contain,
         width: double.infinity,
       );
+    } else if (imageType == ImageType.FILE_IMAGE) {
+      image = Image.file(
+        File(url),
+        fit: BoxFit.contain,
+        width: double.infinity,
+      );
+    } else {
+      image = getCachedNetworkImage(url);
     }
 
     showDialog(
@@ -189,5 +240,39 @@ class Utils {
             ],
           );
         });
+  }
+
+  static void showBackDropLoading(BuildContext context)
+  {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissal by tapping outside
+      builder: (context) {
+        return Material(
+          color: Colors.transparent, // Ensure the backdrop is transparent
+          child: Stack(
+            children: [
+              ModalBarrier(
+                dismissible: false, // Prevent dismissal
+                color: Colors.black.withValues(alpha: 0.3), // Transparent background
+              ),
+              Center(
+                child: Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3), // Semi-transparent loader box
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: LoadingAnimationWidget.hexagonDots(
+                    color: Colors.white,
+                    size: 30,),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

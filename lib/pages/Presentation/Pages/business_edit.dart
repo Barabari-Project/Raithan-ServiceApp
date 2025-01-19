@@ -38,12 +38,10 @@ class BusinessEdit extends GetView<BusinessEditController> {
                               landmarkController: controller.landmarkController,
                               cityController: controller.cityController,
                               stateController: controller.stateController,
-                              categoryController: controller.categoryController,
                               startTimeController: controller.startTimeController,
                               endTimeController: controller.endTimeController,
                               workingDaysController: controller.workingDaysController,
                               workingDays: controller.workingDays,
-                              categories: controller.categories,
                               formKey: controller.businessDetailFormKey,
                             ),
                   Padding(

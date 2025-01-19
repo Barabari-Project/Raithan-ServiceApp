@@ -20,7 +20,6 @@ class NetworkApiService extends BaseApiServices {
 
     String? jwtToken = await Storage.getValue(StorageKeys.JWT_TOKEN);
 
-    print(jwtToken);
     if (headers != null) {
       headers['Authorization'] = 'Baerer $jwtToken';
       return headers;
@@ -34,7 +33,9 @@ class NetworkApiService extends BaseApiServices {
   @override
   Future getGetApiResponse(String url, Map<String, String>? headers,
       bool authenticationRequired) async {
+
     dynamic responsejson;
+
     try {
       final response = await http
           .get(Uri.parse(url),
@@ -51,6 +52,7 @@ class NetworkApiService extends BaseApiServices {
   @override
   Future getPostApiResponse(String url, Map<String, String>? headers,
       Object? body, Encoding? encoding, bool authenticationRequired) async {
+
     dynamic responsejson;
 
     try {
@@ -70,6 +72,7 @@ class NetworkApiService extends BaseApiServices {
 
   Future<dynamic> getPutApiResponse(String url, Map<String, String>? headers, Object? body, Encoding? encoding, bool authenticationRequired) async
   {
+
     dynamic responsejson;
 
     try {
@@ -93,14 +96,14 @@ class NetworkApiService extends BaseApiServices {
       Map<String, String>? headers,
       Map<String, String> fields,
       Map<String, FileWithMediaType>? files,
-      bool authenticationRequired) async {
+      bool authenticationRequired, {String requestType = 'POST'}) async {
     dynamic responseJson;
 
     try {
       headers = await _addJWTToken(headers, authenticationRequired);
 
       var request = http.MultipartRequest(
-          'POST', Uri.parse("${APIConstants.baseUrl}${url}"));
+          requestType, Uri.parse("${APIConstants.baseUrl}${url}"));
 
       // Add headers
       if (headers != null) {
@@ -127,14 +130,11 @@ class NetworkApiService extends BaseApiServices {
       http.StreamedResponse response = await request.send();
 
       responseJson = jsonDecode(await response.stream.bytesToString());
-      print(responseJson);
-      if(responseJson.containsKey('error'))
-        {
-          print(responseJson['error']);
-        }
+
+
       if (response.statusCode == 401) {
         throw UnAuthorizedException();
-      } else if (response.statusCode == 200) {
+      } else if (response.statusCode == 200 || response.statusCode == 201) {
         return responseJson;
       } else {
         if(responseJson.containsKey('error'))
@@ -149,7 +149,6 @@ class NetworkApiService extends BaseApiServices {
       throw Exception(e);
     }
 
-    return responseJson;
   }
 
   dynamic returnResponse(http.Response response) {

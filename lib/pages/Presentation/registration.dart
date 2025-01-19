@@ -60,7 +60,6 @@ class _RegistrationState extends State<Registration> {
   final TextEditingController _landmarkController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _workingDaysController = TextEditingController();
 
   final ScrollController scrollController = ScrollController();
@@ -75,11 +74,6 @@ class _RegistrationState extends State<Registration> {
     "Sunday": false,
   };
 
-  Map<String, bool> categories = Map.fromEntries(
-    BusinessCategory.values.map((category) {
-      return MapEntry(category.name, false);
-    }),
-  );
 
 // Define the working time controllers (start and end time)
   final TextEditingController _startTimeController = TextEditingController();
@@ -114,7 +108,8 @@ class _RegistrationState extends State<Registration> {
 
   void _submitPhone(BuildContext context) async {
     if (_phoneFormKey.currentState?.validate() ?? false) {
-      _showLoading(); // Show loading indicator
+
+      Utils.showBackDropLoading(context);
 
       String phoneNumber = _phoneController.text;
 
@@ -128,12 +123,11 @@ class _RegistrationState extends State<Registration> {
             null,
             false);
 
-        setState(() {
-          currentPhase = 1;
-        });
+        setState(() {currentPhase = 1;});
+        Storage.saveValue(StorageKeys.CURRENT_PHASE, "1");
 
-        Utils.showSnackbar(
-            "Yeah !", response["message"], CustomSnackbarStatus.success);
+        Utils.showSnackbar("Yeah !", response["message"], CustomSnackbarStatus.success);
+
       } catch (e) {
         if (e is Exception) {
           Utils.handleException(e);
@@ -141,21 +135,21 @@ class _RegistrationState extends State<Registration> {
           Utils.showSnackbar(
               "Oops !",
               "Some Thing Went Wrong Please Try Again Later !",
-              CustomSnackbarStatus.error);
+               CustomSnackbarStatus.error);
         }
       } finally {
-        _hideLoading(); // Hide loading indicator
+        Navigator.of(context).pop();
       }
     } else {
-      _hideLoading(); // Hide loading indicator
-      Utils.showSnackbar("Almost There!", "Please write valid Phone Number",
-          CustomSnackbarStatus.warning);
+      Utils.showSnackbar("Almost There!", "Please write valid Phone Number", CustomSnackbarStatus.warning);
     }
   }
 
-  void _submitOtp() async {
+  void _submitOtp(BuildContext context) async {
     if (_otpFormKey.currentState?.validate() ?? false) {
-      _showLoading();
+
+      Utils.showBackDropLoading(context);
+
       try {
         final response = await baseApiServices.getPostApiResponse(
             "${APIConstants.baseUrl}${APIConstants.providerRegistartionVerifyOTP}",
@@ -180,6 +174,7 @@ class _RegistrationState extends State<Registration> {
         setState(() {
           currentPhase = 2;
         });
+        Storage.saveValue(StorageKeys.CURRENT_PHASE, "2");
       } catch (e) {
         if (e is Exception) {
           Utils.handleException(e);
@@ -190,19 +185,18 @@ class _RegistrationState extends State<Registration> {
               CustomSnackbarStatus.error);
         }
       } finally {
-        _hideLoading();
+        Navigator.of(context).pop();
       }
     } else {
-      _hideLoading(); // Hide loading indicator
 
       Utils.showSnackbar("Almost There!", "Please write valid OTP",
           CustomSnackbarStatus.warning);
     }
   }
 
-  void _submitDetails() async {
+  void _submitDetails(BuildContext context) async {
     if (_detailFormKey.currentState?.validate() ?? false) {
-      _showLoading();
+      Utils.showBackDropLoading(context);
       try {
         String filePath = _imageController.text;
 
@@ -231,6 +225,8 @@ class _RegistrationState extends State<Registration> {
         setState(() {
           currentPhase = 3;
         });
+        Storage.saveValue(StorageKeys.CURRENT_PHASE, "3");
+
       } catch (e) {
 
         if (e is Exception) {
@@ -242,23 +238,21 @@ class _RegistrationState extends State<Registration> {
               CustomSnackbarStatus.error);
         }
       } finally {
-        _hideLoading();
+        Navigator.of(context).pop();
       }
     } else {
-      _hideLoading();
 
       Utils.showSnackbar("Almost There!", "Please write valid details",
           CustomSnackbarStatus.warning);
     }
   }
 
-  void _saveCoordinates() async {
-
-  }
-
-  void _submitBusinessDetails() async {
+  void _submitBusinessDetails(BuildContext context) async {
 
     if (_businessDetailFormKey.currentState?.validate() ?? false) {
+
+      Utils.showBackDropLoading(context);
+
       scrollController.animateTo(
         0, // Scroll to top (offset 0)
         duration: Duration(milliseconds: 300), // Smooth scroll duration
@@ -266,7 +260,6 @@ class _RegistrationState extends State<Registration> {
       );
 
       Position? position;
-
 
       try {
         position = await GeoPoistion.determinePosition();
@@ -276,7 +269,6 @@ class _RegistrationState extends State<Registration> {
         return;
       }
 
-      _showLoading();
 
       try {
         Map<String, String> workingTime = {
@@ -298,12 +290,9 @@ class _RegistrationState extends State<Registration> {
           "location" : {
             'lat' : position.latitude,
             'lng' : position.longitude
-          },
-          "category": categories.entries
-              .where((entry) => entry.value == true)  // Filter for entries where value is true
-              .map((entry) => entry.key)  // Extract the key from the filtered entries
-              .toList(),
+          }
         };
+
         final response = await baseApiServices.getPostApiResponse(
             "${APIConstants.baseUrl}${APIConstants.providerSaveBusinessDetails}",
             {
@@ -317,7 +306,7 @@ class _RegistrationState extends State<Registration> {
         Utils.showSnackbar(
             "Yeah !", response["message"], CustomSnackbarStatus.success);
 
-        print(response);
+
         AuthController authController = Get.find();
         authController.activeSession.value = true;
         authController.userRole.value = "PROVIDER";
@@ -334,11 +323,11 @@ class _RegistrationState extends State<Registration> {
               "Some Thing Went Wrong Please Try Again Later !",
               CustomSnackbarStatus.error);
         }
-      } finally {
-        _hideLoading();
+
+        Navigator.of(context).pop();
       }
+
     } else {
-      _hideLoading();
       Utils.showSnackbar("Almost There!", "Please write valid details",
           CustomSnackbarStatus.warning);
     }
@@ -387,7 +376,6 @@ class _RegistrationState extends State<Registration> {
     _landmarkController.dispose();
     _cityController.dispose();
     _stateController.dispose();
-    _categoryController.dispose();
     _workingDaysController.dispose();
     _startTimeController.dispose();
     _endTimeController.dispose();
@@ -469,14 +457,12 @@ class _RegistrationState extends State<Registration> {
         landmarkController: _landmarkController,
         cityController: _cityController,
         stateController: _stateController,
-        categoryController: _categoryController,
         startTimeController: _startTimeController,
         // New parameter
         endTimeController: _endTimeController,
         workingDaysController: _workingDaysController,
         workingDays: workingDays,
         formKey: _businessDetailFormKey,
-        categories: categories,
       );
     }
 
@@ -692,11 +678,11 @@ class _RegistrationState extends State<Registration> {
                                 if (currentPhase == 0) {
                                   _submitPhone(context);
                                 } else if (currentPhase == 1) {
-                                  _submitOtp();
+                                  _submitOtp(context);
                                 } else if (currentPhase == 2) {
-                                  _submitDetails();
+                                  _submitDetails(context);
                                 } else {
-                                  _submitBusinessDetails();
+                                  _submitBusinessDetails(context);
                                 }
                               });
                             },
@@ -769,8 +755,6 @@ class _RegistrationState extends State<Registration> {
                 ),
               ],
             ),
-            if (isLoading)
-              Utils.getLoadingWidget(),
           ],
         ),
       ),

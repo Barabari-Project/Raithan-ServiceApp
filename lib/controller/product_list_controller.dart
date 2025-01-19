@@ -18,9 +18,9 @@ class ProductListController extends GetxController {
 
   ProductListController(this.businessType);
 
-  List<AgricultureLabor> agricultureLaborItems = [];
+  RxList<AgricultureLabor> agricultureLaborItems = RxList();
 
-  List<HarvestorDetails> harvestorDetails = [];
+  RxList<HarvestorDetails> harvestorDetails = RxList();
 
   @override
   void onInit() async
@@ -40,7 +40,7 @@ class ProductListController extends GetxController {
      if(businessType == BusinessCategory.AGRICULTURE_LABOR.name || businessType == BusinessCategory.MECHANICS.name)
        {
          if (response != null && response['products'] != null) {
-           agricultureLaborItems = (response['products'] as List)
+           agricultureLaborItems.value = (response['products'] as List)
                .map((product) => AgricultureLabor.fromJson(product))
                .toList();
          }
@@ -48,7 +48,7 @@ class ProductListController extends GetxController {
      else
        {
          if (response != null && response['products'] != null) {
-           harvestorDetails = (response['products'] as List)
+           harvestorDetails.value = (response['products'] as List)
                .map((product) => HarvestorDetails.fromJson(product))
                .toList();
          }
@@ -61,17 +61,14 @@ class ProductListController extends GetxController {
 
     AuthController authController = Get.find();
 
-    print(businessType);
     try {
 
       dynamic response = await authController.baseApiServices.getGetApiResponse(
           "${APIConstants.baseUrl}${APIConstants.providerGetProductsDetails}?category=$businessType",
           null,
           true);
-      print(response);
       return response;
     } catch (e) {
-      print(e);
       if (e is Exception) {
         Utils.handleException(e);
       } else {
@@ -92,18 +89,31 @@ class ProductListController extends GetxController {
 
     if(businessType == BusinessCategory.AGRICULTURE_LABOR.name || businessType == BusinessCategory.MECHANICS.name)
     {
+
+      if(agricultureLaborItems.isEmpty)
+        {
+          return Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+              children: [Image.asset('assets/images/no_product.png')]);
+        }
       return ListView.builder(
           itemCount: agricultureLaborItems.length,
           itemBuilder: (context, index) {
-            return LaborItemCard(agricultureLabor: agricultureLaborItems[index]);
+            return LaborItemCard(agricultureLabor: agricultureLaborItems[index],businessType: businessType,);
           });
     }
     else
     {
+      if(harvestorDetails.isEmpty)
+      {
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Image.asset('assets/images/no_product.png')]);
+      }
       return ListView.builder(
           itemCount: harvestorDetails.length,
           itemBuilder: (context, index) {
-            return HarverstorItemCard( harvestorDetails : harvestorDetails[index]);
+            return HarverstorItemCard( harvestorDetails : harvestorDetails[index],businessType: businessType,);
           });
     }
   }

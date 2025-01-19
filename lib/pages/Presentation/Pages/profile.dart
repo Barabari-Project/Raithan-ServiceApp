@@ -47,28 +47,30 @@ class Profile extends GetView<ProfileController> {
                           ),
                         ), // Profile image
                         Positioned(
-                          bottom: -AppDimensions.width * 0.2,
-                          // Adjust this value for the overlap
-                          child: Container(
-                            height: AppDimensions.width * 0.4,
-                            // Adjust size
-                            width: AppDimensions.width * 0.4,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 4),
-                              // Optional border
-                              image: controller.profileImage.value.isNotEmpty
-                                  ? DecorationImage(
-                                      image: controller.isImageUpdated.value
-                                          ? FileImage(File(
-                                              controller.profileImage.value))
-                                          : NetworkImage(
-                                              controller.profileImage.value),
-                                      fit: BoxFit.cover)
-                                  : null,
-                            ),
-                          ),
-                        ),
+                            bottom: -AppDimensions.width * 0.2,
+                            // Adjust this value for the overlap
+                            child: CircleAvatar(
+                              radius: AppDimensions.width * 0.2,
+                              backgroundColor: Colors.white,
+                              child: controller.isImageUpdated.value
+                                  ? CircleAvatar(
+                                      radius: AppDimensions.width * 0.2 - 4,
+                                      // Adjust for border thickness
+                                      backgroundImage: FileImage(File(controller
+                                          .profileImage
+                                          .value)), // Local file image
+                                    )
+                                  : Utils.getCachedNetworkImageForProfile(
+                                      controller.profileImage.value,
+                                      imageBuilder: (context, imageProvider) =>
+                                          CircleAvatar(
+                                            radius:
+                                                AppDimensions.width * 0.2 - 4,
+                                            // Adjust for border thickness
+                                            backgroundImage:
+                                                imageProvider, // The loaded network image
+                                          )),
+                            )),
 
                         controller.isEditAllowed.value
                             ? Positioned(
@@ -130,12 +132,10 @@ class Profile extends GetView<ProfileController> {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your first name';
                                   }
-                                  if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value))
-                                  {
+                                  if (!RegExp(RegexConstant.nameValidationRegex)
+                                      .hasMatch(value)) {
                                     return 'First Name should contain only letter and space';
-                                  }
-                                  else if(value.length <= 2)
-                                  {
+                                  } else if (value.length <= 2) {
                                     return "First Name length must be greater than 2";
                                   }
                                   return null;
@@ -167,12 +167,10 @@ class Profile extends GetView<ProfileController> {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your first name';
                                   }
-                                  if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value))
-                                  {
+                                  if (!RegExp(RegexConstant.nameValidationRegex)
+                                      .hasMatch(value)) {
                                     return 'First Name should contain only letter and space';
-                                  }
-                                  else if(value.length <= 2)
-                                  {
+                                  } else if (value.length <= 2) {
                                     return "First Name length must be greater than 2";
                                   }
                                   return null;
@@ -256,15 +254,16 @@ class Profile extends GetView<ProfileController> {
                       ),
                     ),
                     Padding(
-                            padding: EdgeInsets.only(
-                                top: AppDimensions.width * 0.05,
-                                left: AppDimensions.formFieldPadding,
-                                right: AppDimensions.formFieldPadding,
-                                bottom: AppDimensions.formFieldPadding),
-                            child: Row(
-                              // crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: controller.isEditAllowed.value ? [
+                      padding: EdgeInsets.only(
+                          top: AppDimensions.width * 0.05,
+                          left: AppDimensions.formFieldPadding,
+                          right: AppDimensions.formFieldPadding,
+                          bottom: AppDimensions.formFieldPadding),
+                      child: Row(
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: controller.isEditAllowed.value
+                            ? [
                                 CustomButton(
                                   child: Text("Cancel"),
                                   isPrimary: false,
@@ -281,35 +280,38 @@ class Profile extends GetView<ProfileController> {
                                   isPrimary: true,
                                   width: 200,
                                   onPressed: () {
-                                    controller.saveUserProfilDetails();
+                                    controller.saveUserProfilDetails(context);
                                   },
                                   isLoading:
                                       controller.savingProfileDetails.value,
                                 )
-                              ] : [
+                              ]
+                            : [
                                 CustomButton(
-                                  isPrimary: true,
-                                  width: 100,
-                                  onPressed: (){
-                                    controller.isEditAllowed.value = true;
-                                  },
-                                  child: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.edit,
-                                        color: AppColors.whiteColor,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        "Edit",
-                                        style: TextStyle(color: AppColors.whiteColor),
-                                      ),
-                                    ],
-                                  )) ],
-                            ),
-                          ),
+                                    isPrimary: true,
+                                    width: 100,
+                                    onPressed: () {
+                                      controller.isEditAllowed.value = true;
+                                    },
+                                    child: const Row(
+                                      children: [
+                                        Icon(
+                                          Icons.edit,
+                                          color: AppColors.whiteColor,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          "Edit",
+                                          style: TextStyle(
+                                              color: AppColors.whiteColor),
+                                        ),
+                                      ],
+                                    ))
+                              ],
+                      ),
+                    ),
                   ],
                 ),
         ),

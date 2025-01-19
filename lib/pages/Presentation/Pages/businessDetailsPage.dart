@@ -22,12 +22,10 @@ class Businessdetailspage extends StatefulWidget {
   final TextEditingController landmarkController;
   final TextEditingController cityController;
   final TextEditingController stateController;
-  final TextEditingController categoryController;
   final TextEditingController startTimeController;
   final TextEditingController endTimeController;
   final TextEditingController workingDaysController;
 
-  final Map<String,bool> categories;
 
   final Map<String, bool> workingDays ;
 
@@ -44,12 +42,10 @@ class Businessdetailspage extends StatefulWidget {
      required this.landmarkController,
      required this.cityController,
      required this.stateController,
-     required this.categoryController,
      required this.startTimeController,  // New parameter
      required this.endTimeController,
      required this.workingDaysController,
      required this.workingDays,
-     required this.categories,
      required this.formKey,  // For
   });
 
@@ -169,43 +165,43 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 },
               ),
               sizedBox(),
-            Container(
-              padding: const EdgeInsets.only(top:0,bottom: 0,right:10.0,left: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey),
-              ),
-              child: Theme(
-                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-                  onExpansionChanged: (isExpanding)
-                    {
-                       if(isExpanding)
-                         {
-                           FocusScope.of(context).requestFocus(categoryFocusNode);
-                         }
-                    },
-                    tilePadding: EdgeInsets.zero, // Removes padding around the tile
-                    collapsedBackgroundColor: Colors.transparent,
-                    title: const Text("Select Business Categories",  style: TextStyle(
-                      fontSize: AppDimensions.regularFontSize,
-                      fontWeight: FontWeight.bold,
-                    )),
-                    children: [ ...widget.categories.keys.map((category) {
-                      return CheckboxListTile(
-                        title: Text(category),
-                        value: widget.categories[category],
-                        onChanged: (bool? value) {
-                          setState(() {
-                            widget.categories[category] = value!;
-                          });
-                        },
-                      );
-                    }).toList(), ]
-                ),
-              ),
-            ),
-              sizedBox(),
+            // Container(
+            //   padding: const EdgeInsets.only(top:0,bottom: 0,right:10.0,left: 10),
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(8),
+            //     border: Border.all(color: Colors.grey),
+            //   ),
+            //   child: Theme(
+            //     data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            //     child: ExpansionTile(
+            //       onExpansionChanged: (isExpanding)
+            //         {
+            //            if(isExpanding)
+            //              {
+            //                FocusScope.of(context).requestFocus(categoryFocusNode);
+            //              }
+            //         },
+            //         tilePadding: EdgeInsets.zero, // Removes padding around the tile
+            //         collapsedBackgroundColor: Colors.transparent,
+            //         title: const Text("Select Business Categories",  style: TextStyle(
+            //           fontSize: AppDimensions.regularFontSize,
+            //           fontWeight: FontWeight.bold,
+            //         )),
+            //         children: [ ...widget.categories.keys.map((category) {
+            //           return CheckboxListTile(
+            //             title: Text(category),
+            //             value: widget.categories[category],
+            //             onChanged: (bool? value) {
+            //               setState(() {
+            //                 widget.categories[category] = value!;
+            //               });
+            //             },
+            //           );
+            //         }).toList(), ]
+            //     ),
+            //   ),
+            // ),
+            //   sizedBox(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -222,7 +218,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               CustomTextfield(
                 controller: widget.blockNumberController,
                 type: TextInputType.text,
-                label: "Block Number",
+                label: "House Number",
                 focusNode: blockNumberFocusNode,
                 onFieldSubmitted: (value){
                   Utils.changeNodeFocus(context, blockNumberFocusNode, streetFocusNode);

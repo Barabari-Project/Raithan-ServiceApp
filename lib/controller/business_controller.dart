@@ -24,6 +24,7 @@ class BusinessController extends GetxController {
   RxBool isImageUpdated = false.obs;
   RxBool savingBusinessLocation = false.obs;
 
+  bool updateLocation = false;
 
 
   dynamic businessDetails = {} ;
@@ -69,35 +70,42 @@ class BusinessController extends GetxController {
             // "Yes" button
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                updateLocation = false;
+                Navigator.of(context).pop(false);
               },
               child: Text('No'),
             ),
             // "No" button
             TextButton(
               onPressed: () {
-                updateBusinessLocation();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(true);
               },
               child: Text('Yes'),
             ),
           ],
         );
       },
-    );
+    ).then((result) {
+      if (result == true) {
+        updateBusinessLocation(context);
+      }
+    });
   }
 
-  void updateBusinessLocation() async {
+  void updateBusinessLocation(BuildContext context) async {
+
     Position? position;
 
-    savingBusinessLocation.value = true;
+    if(context.mounted)
+    {
+      Utils.showBackDropLoading(context);
+    }
 
     try {
       position = await GeoPoistion.determinePosition();
     } catch (e) {
       Utils.showSnackbar("Almost There!", "Please Allow Location Permission",
           CustomSnackbarStatus.warning);
-      savingBusinessLocation.value = false;
       return;
     }
 
@@ -133,7 +141,9 @@ class BusinessController extends GetxController {
       }
     }
     finally{
-      savingBusinessLocation.value = false;
+       if(context.mounted){
+         Navigator.of(context).pop();
+       }
     }
   }
 
@@ -157,6 +167,12 @@ class BusinessController extends GetxController {
           'Business Name': response["business"]["businessName"]};
 
         categories = List<String>.from(response["business"]["category"]);
+
+        if(categories.isEmpty)
+          {
+            categories.add("No products have been added yet, ");
+            categories.add("so no categories are available.");
+          }
 
         businessAddress = {   'Block Number': response["business"]["blockNumber"],
           'Street': response["business"]["street"],

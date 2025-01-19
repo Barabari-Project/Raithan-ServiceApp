@@ -160,7 +160,7 @@ class LaborEdit extends GetView<LaborEditController> {
                                   controller.saveProductDetailsDetails(context);
                                 },
                                 isLoading:
-                                controller.savingBusinessDetails.value,
+                                controller.savingProductDetails.value,
                               )
                             ] ,
                           )

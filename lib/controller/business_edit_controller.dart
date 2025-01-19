@@ -27,7 +27,6 @@ class BusinessEditController extends GetxController{
   final TextEditingController landmarkController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
   final TextEditingController workingDaysController = TextEditingController();
 
   final TextEditingController startTimeController = TextEditingController();
@@ -64,7 +63,6 @@ class BusinessEditController extends GetxController{
     cityController.value = TextEditingValue(text: businessDetails["city"] );
     stateController.value = TextEditingValue(text: businessDetails["state"]);
     pincodeController.value = TextEditingValue(text: businessDetails["pincode"]);
-    categoryController.value = TextEditingValue(text: businessDetails["category"][0]);
 
     workingDays = Map<String, bool>.from(businessDetails["workingDays"] ?? {});
 
@@ -94,14 +92,6 @@ class BusinessEditController extends GetxController{
   void saveBusinessDetails(BuildContext context) async
   {
 
-
-    if(!categories.containsValue(true))
-      {
-        Utils.showSnackbar("Almost There!", "Please select Atleast one business category", CustomSnackbarStatus.warning);
-        return;
-      }
-
-
     if (businessDetailFormKey.currentState?.validate() ?? false ) {
 
       try {
@@ -121,11 +111,14 @@ class BusinessEditController extends GetxController{
           "state": stateController.text,
           "workingDays": workingDays,
           "workingTime": workingTime,
-          "category": categories.entries
-              .where((entry) => entry.value == true)  // Filter for entries where value is true
-              .map((entry) => entry.key)  // Extract the key from the filtered entries
-              .toList(),
+          // "category": categories.entries
+          //     .where((entry) => entry.value == true)  // Filter for entries where value is true
+          //     .map((entry) => entry.key)  // Extract the key from the filtered entries
+          //     .toList(),
         };
+
+        Utils.showBackDropLoading(context);
+
         final response = await baseApiServices.getPutApiResponse(
             "${APIConstants.baseUrl}${APIConstants.providerSaveBusinessDetails}",
             {
@@ -151,7 +144,8 @@ class BusinessEditController extends GetxController{
               CustomSnackbarStatus.error);
         }
       } finally {
-        savingBusinessDetails.value = false;
+        Navigator.of(context).pop();
+        // savingBusinessDetails.value = false;
       }
     } else {
 

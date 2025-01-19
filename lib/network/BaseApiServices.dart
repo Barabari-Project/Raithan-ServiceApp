@@ -16,6 +16,7 @@ abstract class BaseApiServices{
       Map<String, String>? headers,
       Map<String, String> fields,
       Map<String, FileWithMediaType>? files,
-      bool authenticationRequired
+      bool authenticationRequired,
+      {String requestType = 'POST'}
       );
 }

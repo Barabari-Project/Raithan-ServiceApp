@@ -42,7 +42,7 @@ class ProfileController extends GetxController {
     dynamic response = await fetchUserProfileDetails();
     if(response != null)
       {
-        print(response);
+
         firstNameController.value =
             TextEditingValue(text: response["provider"]["firstName"]);
         lastNameController.value =
@@ -53,7 +53,15 @@ class ProfileController extends GetxController {
             TextEditingValue(text: response["provider"]["gender"]);
 
         profileImage.value = response["provider"]["profilePicturePath"];
+
+
       }
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    Utils.clearImageCache(profileImage.value);
   }
 
 
@@ -65,8 +73,10 @@ class ProfileController extends GetxController {
     );
     if(result != null)
       {
+        await Utils.clearImageCache(profileImage.value);
         profileImage.value = result.files.first.path!;
         isImageUpdated.value = true;
+
       }
   }
 
@@ -117,7 +127,7 @@ class ProfileController extends GetxController {
     );
   }
 
-  Future<void> saveUserProfilDetails() async
+  Future<void> saveUserProfilDetails(BuildContext context) async
   {
 
     if(!profileDetailsFormKey.currentState!.validate())
@@ -135,7 +145,8 @@ class ProfileController extends GetxController {
       );
     });
 
-      savingProfileDetails.value = true;
+      // savingProfileDetails.value = true;
+        Utils.showBackDropLoading(context);
 
        try {
          String filePath = profileImage.value;
@@ -173,7 +184,8 @@ class ProfileController extends GetxController {
          }
        }
        finally{
-         savingProfileDetails.value = false;
+         // savingProfileDetails.value = false;
+         Navigator.of(context).pop();
        }
   }
 

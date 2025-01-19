@@ -39,7 +39,14 @@ class _CustomImageFieldState extends State<CustomImageField> {
       if(result.files.single.size > maxFileSizeInBytes) {
         Utils.showSnackbar("Oops !", "File size must be less then 5MB", CustomSnackbarStatus.warning);
       }
+
       else {
+
+        if(!widget.isUpdated)
+        {
+          Utils.clearImageCache(widget.controller.text);
+        }
+
         setState(() {
           _filePath = result.files.single.path;
           widget.controller.value =  TextEditingValue(text:_filePath!);
@@ -97,7 +104,7 @@ class _CustomImageFieldState extends State<CustomImageField> {
               ),
               onPressed: _pickImage,
             ),
-            if (_filePath != null)
+            if (widget.controller.text != "" )
               IconButton(
                 icon: const Icon(
                   Icons.remove_red_eye,

@@ -1,15 +1,21 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/constants/enums/image_type.dart';
+import 'package:raithan_serviceapp/constants/routes/app_route.dart';
+import 'package:raithan_serviceapp/constants/routes/route_name.dart';
 import 'package:raithan_serviceapp/dtos/harverstor_dto.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../Utils/utils.dart';
 
 class HarverstorItemCard extends StatelessWidget {
   final HarvestorDetails harvestorDetails;
+  final String businessType;
 
-  HarverstorItemCard({Key? key, required this.harvestorDetails})
+  HarverstorItemCard({Key? key, required this.harvestorDetails, required this.businessType})
       : super(key: key);
 
   @override
@@ -37,10 +43,21 @@ class HarverstorItemCard extends StatelessWidget {
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: Image.network(
-                    url,
+                  child: CachedNetworkImage(imageUrl: url,
                     fit: BoxFit.cover,
                     width: double.infinity,
+                    errorWidget: (context,url,error){
+                    print(url);
+                      return Text("Image Not Found $url");
+                    },
+                    placeholder: (context,url){
+                      return Shimmer.fromColors(
+                          baseColor: const Color.fromARGB(255, 216, 216, 216),
+                          highlightColor: const Color.fromARGB(255, 255, 255, 255),
+                          child: Container(
+                            color: Colors.amber,
+                          ));
+                    },
                   ),
                 ),
               );
@@ -155,7 +172,14 @@ class HarverstorItemCard extends StatelessWidget {
                     Text('${harvestorDetails.avgRating}'),
                     Expanded(child: SizedBox()),
                     OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed(RouteName.editProductDetails,arguments: {
+                            'isEdit' : true,
+                            'productDetails' : harvestorDetails,
+                            'businessType' : businessType
+                          });
+
+                        },
                         style: ButtonStyle(
                           padding: WidgetStateProperty.all<EdgeInsets>(
                               EdgeInsets.symmetric(
