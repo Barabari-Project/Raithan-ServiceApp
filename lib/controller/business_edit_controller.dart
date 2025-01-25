@@ -28,6 +28,7 @@ class BusinessEditController extends GetxController{
   final TextEditingController cityController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
   final TextEditingController workingDaysController = TextEditingController();
+  final TextEditingController businessTypeController = TextEditingController();
 
   final TextEditingController startTimeController = TextEditingController();
   final TextEditingController endTimeController = TextEditingController();
@@ -63,7 +64,7 @@ class BusinessEditController extends GetxController{
     cityController.value = TextEditingValue(text: businessDetails["city"] );
     stateController.value = TextEditingValue(text: businessDetails["state"]);
     pincodeController.value = TextEditingValue(text: businessDetails["pincode"]);
-
+    businessTypeController.value = TextEditingValue(text: businessDetails["businessType"] ?? "");
     workingDays = Map<String, bool>.from(businessDetails["workingDays"] ?? {});
 
     categories = Map.fromEntries(
@@ -111,6 +112,7 @@ class BusinessEditController extends GetxController{
           "state": stateController.text,
           "workingDays": workingDays,
           "workingTime": workingTime,
+          'businessType' :businessTypeController.text
           // "category": categories.entries
           //     .where((entry) => entry.value == true)  // Filter for entries where value is true
           //     .map((entry) => entry.key)  // Extract the key from the filtered entries
@@ -132,9 +134,9 @@ class BusinessEditController extends GetxController{
         setBusinessDetails(response);
         Utils.showSnackbar("Yeah !", response["message"], CustomSnackbarStatus.success);
         Navigator.of(context).pop();
-
+        Navigator.of(context).pop();
       } catch (e) {
-
+        Navigator.of(context).pop();
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -144,8 +146,8 @@ class BusinessEditController extends GetxController{
               CustomSnackbarStatus.error);
         }
       } finally {
-        Navigator.of(context).pop();
-        // savingBusinessDetails.value = false;
+
+
       }
     } else {
 

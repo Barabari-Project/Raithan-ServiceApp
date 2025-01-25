@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
@@ -12,10 +13,12 @@ class OtpPage extends StatefulWidget {
   final TextEditingController otpController;
   final GlobalKey<FormState> formKey;
   final String phone;
+  final void Function(BuildContext context) sentOtp;
   const OtpPage(
       {super.key,
       required this.otpController,
       required this.formKey,
+      required this.sentOtp,
       required this.phone});
 
   @override
@@ -79,7 +82,7 @@ class _OtpPageState extends State<OtpPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "OTP sent successfully to",
+                    "OTP sent successfully to".tr,
                     style: robotoNormal.copyWith(
                       fontSize: 14,
                     ),
@@ -133,10 +136,10 @@ class _OtpPageState extends State<OtpPage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter the OTP';
+                        return 'Please enter the OTP'.tr;
                       }
                       if (value.length != 6 ||  !RegExp(RegexConstant.otpOrPincodeValidationRegex).hasMatch(value)) {
-                        return 'OTP must be 6 digits';
+                        return 'OTP must be 6 digits'.tr;
                       }
                       return null;
                     },
@@ -149,24 +152,7 @@ class _OtpPageState extends State<OtpPage> {
                         onPressed: () async {
                           if (!timerRunning) {
                             // make an api call
-                            try {
-                              final response = await _onboardingRepository
-                                  .registerMobileNumber(
-                                widget.phone,
-                                "/raithan/api/service-providers/onboard/user/mobile",
-                                false,
-                                context
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text('Success: ${response['message']}')),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.toString())),
-                              );
-                            }
+                            widget.sentOtp(context);
                             startTimer();
                             setState(() {
                               timerRunning = true;
@@ -174,7 +160,7 @@ class _OtpPageState extends State<OtpPage> {
                           }
                         },
                         child: Text(
-                          "Resend OTP",
+                          "Resend OTP".tr,
                           style: robotoBold.copyWith(
                             color: timerRunning ? Colors.black38 : black,
                           ),

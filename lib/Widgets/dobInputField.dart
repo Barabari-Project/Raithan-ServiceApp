@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
 class DOBInputField extends StatefulWidget {
@@ -68,7 +69,7 @@ class _DOBInputFieldState extends State<DOBInputField> {
           .titleMedium!
           .copyWith(color: Colors.black),
       decoration: InputDecoration(
-        label: const Text("Year of Birth"),
+        label: Text("Year of Birth".tr),
         labelStyle:
             Theme.of(context).textTheme.titleSmall!.copyWith(color: grey),
         border: OutlineInputBorder(

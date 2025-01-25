@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/Utils/utils.dart';
-import 'package:raithan_serviceapp/Widgets/dobInputField.dart';
-import 'package:raithan_serviceapp/Widgets/dropDownTextFeild.dart';
-import 'package:raithan_serviceapp/Widgets/imageInputFeild.dart';
 import 'package:raithan_serviceapp/Widgets/textField.dart';
-import 'package:raithan_serviceapp/constants/enums/business_category.dart';
+import 'package:raithan_serviceapp/constants/enums/business_type.dart';
 import 'package:raithan_serviceapp/constants/regex_constant.dart';
+
+import '../../../Widgets/dropDownTextFeild.dart';
 
 enum Gender { male, female, other }
 
@@ -25,6 +24,7 @@ class Businessdetailspage extends StatefulWidget {
   final TextEditingController startTimeController;
   final TextEditingController endTimeController;
   final TextEditingController workingDaysController;
+  final TextEditingController businessTypeController;
 
 
   final Map<String, bool> workingDays ;
@@ -47,6 +47,7 @@ class Businessdetailspage extends StatefulWidget {
      required this.workingDaysController,
      required this.workingDays,
      required this.formKey,  // For
+     required this.businessTypeController
   });
 
   @override
@@ -58,6 +59,7 @@ class Businessdetailspage extends StatefulWidget {
 class _BusinessDetailsPageState extends State<Businessdetailspage> {
 
   late FocusNode businessNameFocusNode;
+  late FocusNode businessTypeFocusNode;
   late FocusNode pincodeFocusNode;
   late FocusNode blockNumberFocusNode;
   late FocusNode streetFocusNode;
@@ -82,6 +84,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
     stateFocusNode = FocusNode();
     categoryFocusNode = FocusNode();
     workingTimeFocusNode = FocusNode();
+    businessTypeFocusNode = FocusNode();
 
   }
 
@@ -137,7 +140,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Business Information",
+                    "Business Information".tr,
                     style: robotoBold.copyWith(
                       color: black,
                       fontSize: 20,
@@ -156,15 +159,25 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 onChanged: (value){
                   widget.formKey.currentState?.validate();
                 },
-                label: "Business Name",
+                label: "Business Name ( Optional )".tr,
+              ),
+              sizedBox(),
+              DropdownTextField(
+                controller: widget.businessTypeController,
+                label: "Select an Business Type".tr,
+                focusNode: businessTypeFocusNode,
+                onFieldSubmitted: (value) {
+                  businessTypeFocusNode.unfocus();
+                },
+                options: BusinessType.values.map((type) => type.toString()).toList(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your Business name';
+                    return 'Please select an option'.tr;
                   }
                   return null;
                 },
               ),
-              sizedBox(),
+            sizedBox(),
             // Container(
             //   padding: const EdgeInsets.only(top:0,bottom: 0,right:10.0,left: 10),
             //   decoration: BoxDecoration(
@@ -206,7 +219,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Business Address",
+                    "Business Address".tr,
                     style: robotoBold.copyWith(
                       color: black,
                       fontSize: 20,
@@ -218,7 +231,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               CustomTextfield(
                 controller: widget.blockNumberController,
                 type: TextInputType.text,
-                label: "House Number",
+                label: "House Number".tr,
                 focusNode: blockNumberFocusNode,
                 onFieldSubmitted: (value){
                   Utils.changeNodeFocus(context, blockNumberFocusNode, streetFocusNode);
@@ -228,7 +241,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please write your block Number';
+                    return 'Please write your home Number'.tr;
                   }
                   return null;
                 },
@@ -237,7 +250,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               CustomTextfield(
                 controller: widget.streetController,
                 type: TextInputType.text,
-                label: "Street",
+                label: "Street".tr,
                 focusNode: streetFocusNode,
                 onFieldSubmitted: (value){
                   Utils.changeNodeFocus(context,streetFocusNode,areaFocusNode);
@@ -247,7 +260,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please write your street';
+                    return 'Please write your street'.tr;
                   }
                   return null;
                 },
@@ -256,7 +269,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               CustomTextfield(
                 controller: widget.areaController,
                 type: TextInputType.text,
-                label: "Area",
+                label: "Area".tr,
                 focusNode: areaFocusNode,
                 onFieldSubmitted: (value){
                   Utils.changeNodeFocus(context,areaFocusNode,landmarkFocusNode);
@@ -266,7 +279,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please write your area';
+                    return 'Please write your area'.tr;
                   }
                   return null;
                 },
@@ -275,7 +288,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               CustomTextfield(
                 controller: widget.landmarkController,
                 type: TextInputType.text,
-                label: "Landmark",
+                label: "Landmark".tr,
                 focusNode: landmarkFocusNode,
                 onFieldSubmitted: (value){
                   Utils.changeNodeFocus(context,landmarkFocusNode,cityFocusNode);
@@ -294,7 +307,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 child: CustomTextfield(
                   controller: widget.cityController,
                   type: TextInputType.text,
-                  label: "City",
+                  label: "City".tr,
                   focusNode: cityFocusNode,
                   onFieldSubmitted: (value){
                     Utils.changeNodeFocus(context,cityFocusNode,stateFocusNode);
@@ -304,7 +317,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please write your city';
+                      return 'Please write your city'.tr;
                     }
                     return null;
                   },
@@ -316,7 +329,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 child: CustomTextfield(
                   controller: widget.stateController,
                   type: TextInputType.text,
-                  label: "State",
+                  label: "State".tr,
                   focusNode: stateFocusNode,
                   onFieldSubmitted: (value){
                     Utils.changeNodeFocus(context,stateFocusNode,pincodeFocusNode);
@@ -326,7 +339,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please write your state';
+                      return 'Please write your state'.tr;
                     }
                     return null;
                   },
@@ -337,7 +350,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
               CustomTextfield(
                 controller: widget.pincodeController,
                 type: TextInputType.number,
-                label: "Pincode",
+                label: "Pincode".tr,
                 onChanged: (value){
                   widget.formKey.currentState?.validate();
                 },
@@ -348,11 +361,11 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 maxLength: 6,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please write your pincode';
+                    return 'Please write your pincode'.tr;
                   }
                   if(!RegExp(RegexConstant.otpOrPincodeValidationRegex).hasMatch(value))
                   {
-                    return 'Pincode must be 6 digits only';
+                    return 'Pincode must be 6 digits only'.tr;
                   }
                   return null;
                 },
@@ -363,7 +376,7 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Working Time",
+                    "Working Time".tr,
                     style: robotoBold.copyWith(
                       color: black,
                       fontSize: 20,
@@ -386,13 +399,13 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                         _selectTime(context, widget.startTimeController);
                       },
                       suffixIcon : Icon(Icons.access_time),
-                      label: "Start Time",
+                      label: "Start Time".tr,
                       onChanged: (value){
                         widget.formKey.currentState?.validate();
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please Select Start Time';
+                          return 'Please Select Start Time'.tr;
                         }
                         return null;
                       },
@@ -409,13 +422,13 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                         _selectTime(context, widget.endTimeController);
                       },
                       suffixIcon : Icon(Icons.access_time),
-                      label: "End Time",
+                      label: "End Time".tr,
                       onChanged: (value){
                         widget.formKey.currentState?.validate();
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please Select End Time';
+                          return 'Please Select End Time'.tr;
                         }
                         return null;
                       },
@@ -444,13 +457,13 @@ class _BusinessDetailsPageState extends State<Businessdetailspage> {
                       },
                       tilePadding: EdgeInsets.zero, // Removes padding around the tile
                       collapsedBackgroundColor: Colors.transparent,
-                    title: const Text("Select Working Days",  style: TextStyle(
+                    title: Text("Select Working Days".tr, style: const TextStyle(
                       fontSize: AppDimensions.regularFontSize,
                       fontWeight: FontWeight.bold,
                     )),
                     children: [ ...widget.workingDays.keys.map((day) {
                       return CheckboxListTile(
-                        title: Text(day),
+                        title: Text(day.tr),
                         value: widget.workingDays[day],
                         onChanged: (bool? value) {
                           setState(() {

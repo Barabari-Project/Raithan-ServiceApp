@@ -1,5 +1,7 @@
 
 
+import 'package:get/get.dart';
+
 class AgricultureLabor {
   final String eShramCardNumber;
   final bool readyToTravelIn10Km;
@@ -8,9 +10,11 @@ class AgricultureLabor {
   final Map<String,String> imageWithTitle;
   final int numberOfWorkers;
   final ProductStatus verificationStatus;
-  final double avgRating;
+  RxDouble avgRating;
   final List<String> imageUrls;
+  final String? mobileNumber;
   final String id;
+  final String? serviceProviderId;
 
   AgricultureLabor({
     required this.eShramCardNumber,
@@ -22,7 +26,9 @@ class AgricultureLabor {
     required this.avgRating,
     required this.imageUrls,
     required this.id,
-    required this.imageWithTitle
+    required this.imageWithTitle,
+    required this.mobileNumber,
+    required this.serviceProviderId
   });
 
   factory AgricultureLabor.fromJson(Map<String, dynamic> json) {
@@ -35,10 +41,12 @@ class AgricultureLabor {
           .toList(),
       numberOfWorkers: json['numberOfWorkers'],
       verificationStatus: ProductStatus.fromJson({'status': json['verificationStatus']}),
-      avgRating: (json['avgRating'] as num).toDouble(),
+      avgRating : (json['avgRating'] as num).toDouble().obs,
       imageUrls: List<String>.from(json['images'].values),
       imageWithTitle: Map<String,String>.from(json['images']),
-      id: json['_id']
+      id: json['_id'],
+      mobileNumber: json["business"] != null && json["business"] is Map && json["business"]["mobileNumber"] != null ? json["business"]["mobileNumber"] : null,
+      serviceProviderId: json["business"] != null && json["business"] is Map && json["business"]["serviceProvider"] != null ? json["business"]["serviceProvider"] : null
     );
   }
 }

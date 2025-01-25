@@ -16,7 +16,7 @@ class Business extends GetView<BusinessController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar("Business", context, options: false),
+      appBar: customAppBar("Business".tr, context, options: false),
       body: Obx(
         () => SingleChildScrollView(
           child: Container(
@@ -38,23 +38,56 @@ class Business extends GetView<BusinessController> {
                               SizedBox(
                                 height: AppDimensions.formFieldPadding * 0.5,
                               ),
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Business Information",
-                                    style: TextStyle(
+                                    "Business Information".tr,
+                                    style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   )
                                 ],
                               ),
-                              BusinessInfoTile(
-                                label: 'Business Name',
-                                value: controller.businessDetails['Business Name'],
-                                isFirst: true,
-                                isLast: true,
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: controller.businessDetails.length,
+                                separatorBuilder: (context, index) {
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                        AppDimensions.formFieldPadding,
+                                        vertical: 0),
+                                    child: Divider(),
+                                  );
+                                },
+                                itemBuilder: (context, index) {
+                                  String label = controller.businessDetails.keys
+                                      .elementAt(index);
+                                  String value =
+                                  controller.businessDetails[label]!;
+                                  return BusinessInfoTile(
+                                    label: label,
+                                    value: value.tr,
+                                    isFirst: index == 0,
+                                    isLast: index ==
+                                        (controller.businessDetails.length - 1),
+                                  );
+                                },
                               ),
+                              // BusinessInfoTile(
+                              //   label: 'Business Name'.tr,
+                              //   value: controller.businessDetails['Business Name'],
+                              //   isFirst: true,
+                              //   isLast: true,
+                              // ),
+                              // BusinessInfoTile(
+                              //   label: 'Business Type'.tr,
+                              //   value: controller.businessDetails['Business Type'],
+                              //   isFirst: true,
+                              //   isLast: true,
+                              // ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: AppDimensions.formFieldPadding,vertical: 0),
                                 child: Container(
@@ -63,9 +96,9 @@ class Business extends GetView<BusinessController> {
                                 ),
                               ),
                               SizedBox(height: AppDimensions.formFieldPadding*0.5,),
-                              const Text(
-                                "Categories",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Text(
+                                "Categories".tr,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: AppDimensions.formFieldPadding*0.25,),
                               Padding(
@@ -79,7 +112,7 @@ class Business extends GetView<BusinessController> {
                                   alignment: WrapAlignment.center,
                                   children: controller.categories
                                       .map((day) => Text(
-                                        day,
+                                        day.tr,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w500),
                                       ))
@@ -106,12 +139,12 @@ class Business extends GetView<BusinessController> {
                               SizedBox(
                                 height: AppDimensions.formFieldPadding * 0.5,
                               ),
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Business Address",
-                                    style: TextStyle(
+                                    "Business Address".tr,
+                                    style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   )
@@ -163,12 +196,12 @@ class Business extends GetView<BusinessController> {
                               SizedBox(
                                 height: AppDimensions.formFieldPadding * 0.5,
                               ),
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Working Time",
-                                    style: TextStyle(
+                                    "Working Time".tr,
+                                    style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   )
@@ -220,12 +253,12 @@ class Business extends GetView<BusinessController> {
                               SizedBox(
                                 height: AppDimensions.formFieldPadding * 0.5,
                               ),
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Working Days",
-                                    style: TextStyle(
+                                    "Working Days".tr,
+                                    style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                                   )
@@ -245,7 +278,7 @@ class Business extends GetView<BusinessController> {
                                   alignment: WrapAlignment.center,
                                   children: controller.businessDays
                                       .map((day) => Text(
-                                        day,
+                                        day.tr,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w500),
                                       ))
@@ -262,49 +295,66 @@ class Business extends GetView<BusinessController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CustomButton(
-                              isPrimary: true,
-                              width: 180,
-                              isLoading: controller.savingBusinessLocation.value,
+                          FilledButton(
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all<Color>(AppColors.appBarColor), // Set your custom background color
+                                padding: WidgetStateProperty.all<EdgeInsets>(
+                                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Adjust padding if needed
+                                ),
+                                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12), // Add rounded corners
+                                  ),
+                                ),
+                              ),
                               onPressed: ()
                               {
                                 controller.askUpdateLocationConfirmation(context);
                                 },
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.location_on_outlined,
                                     color: AppColors.whiteColor,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   Text(
-                                    "Update Location",
-                                    style: TextStyle(color: AppColors.whiteColor),
+                                    "Update Location".tr,
+                                    style: const TextStyle(color: AppColors.whiteColor),
                                   ),
                                 ],
                               )),
                           SizedBox(width: AppDimensions.formFieldPadding,),
-                          CustomButton(
-                              isPrimary: true,
-                              width: 100,
+                          FilledButton(
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all<Color>(AppColors.appBarColor), // Set your custom background color
+                                padding: WidgetStateProperty.all<EdgeInsets>(
+                                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Adjust padding if needed
+                                ),
+                                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12), // Add rounded corners
+                                  ),
+                                ),
+                              ),
                               onPressed: ()
                               {
                                 Get.toNamed(RouteName.businessEdit,arguments: controller.businessInfo);
                               },
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.edit,
                                     color: AppColors.whiteColor,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   Text(
-                                    "Edit",
-                                    style: TextStyle(color: AppColors.whiteColor),
+                                    "Edit".tr,
+                                    style: const TextStyle(color: AppColors.whiteColor),
                                   ),
                                 ],
                               )),
@@ -345,8 +395,8 @@ class BusinessInfoTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            label.tr,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Expanded(
               child: Text(

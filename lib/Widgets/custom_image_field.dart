@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
 import 'package:raithan_serviceapp/constants/enums/image_type.dart';
 
@@ -70,7 +71,7 @@ class _CustomImageFieldState extends State<CustomImageField> {
       validator: (value){
         if(widget.controller.text == "" && widget.url == null)
           {
-            return "Please Select Image";
+            return "Select an image".tr;
           }
         return null;
       },
@@ -125,9 +126,7 @@ class _CustomImageFieldState extends State<CustomImageField> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      onTap: () {
-        // Implement your onTap functionality here
-      },
+      onTap: _pickImage,
     );
   }
 }

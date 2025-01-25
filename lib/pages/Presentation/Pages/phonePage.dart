@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/Widgets/textField.dart';
@@ -21,14 +22,14 @@ class PhonePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Phone",
+            "Phone".tr,
             style: robotoBold.copyWith(
               color: black,
               fontSize: 26,
             ),
           ),
           Text(
-            "You will get 6 digit OTP on your phone",
+            "You will get 6 digit OTP on your phone".tr,
             style: robotoBold.copyWith(
               color: Colors.black45,
               fontSize: 12,
@@ -44,15 +45,15 @@ class PhonePage extends StatelessWidget {
                 CustomTextfield(
                   controller: phoneController,
                   type: TextInputType.phone,
-                  label: 'Phone Number',
+                  label: 'Phone Number'.tr,
                   maxLength: 10,
                   isBuildCounterRequired: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a phone number';
+                      return 'Please enter a phone number'.tr;
                     }
                     if (!RegExp(r'^\+?[0-9]{10,15}$').hasMatch(value)) {
-                      return 'Please enter a valid phone number';
+                      return 'Please enter a valid phone number'.tr;
                     }
                     return null;
                   },

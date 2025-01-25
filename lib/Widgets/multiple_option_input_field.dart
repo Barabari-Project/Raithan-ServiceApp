@@ -49,7 +49,7 @@ class _MultipleOptionInputField extends State<MultipleOptionInputField> {
           ),
           children: widget.categories.keys.map((category) {
             return CheckboxListTile(
-              title: Text(category),
+              title: Text(category.tr),
               value: widget.categories[category],
               onChanged: (bool? value) {
                 setState(() {

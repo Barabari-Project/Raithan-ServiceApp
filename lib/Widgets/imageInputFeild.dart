@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
 class ImagePickerField extends StatefulWidget {
@@ -52,7 +53,7 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
             fontSize: 16,
           ),
           decoration: InputDecoration(
-            label: const Text("Upload Image"),
+            label: Text("Upload Image".tr),
             labelStyle: robotoBold.copyWith(
               color: grey,
               fontSize: 14,
@@ -76,7 +77,7 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
               ),
               onPressed: _pickImage,
             ),
-            hintText: "Select an image",
+            hintText: "Select an image".tr,
             hintStyle: robotoBold.copyWith(
               color: grey,
               fontSize: 14,

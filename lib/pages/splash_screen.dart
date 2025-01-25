@@ -21,11 +21,21 @@ class SplashScreen extends GetView<SplashScreenController> {
 
     AuthController authController = Get.find();
 
+    authController.activeSession.value = false;
+
     if(jwtToken == null || jwtToken.isEmpty)
     {
+      authController.userRole.value = "SEEKER";
       Get.offNamed(RouteName.provider_home);
       return;
     }
+
+    if(userRole == null)
+      {
+        authController.userRole.value = "SEEKER";
+        Get.offNamed(RouteName.provider_home);
+        return;
+      }
 
     if(jwtToken != null && jwtToken.isNotEmpty)
     {
@@ -45,6 +55,7 @@ class SplashScreen extends GetView<SplashScreenController> {
         }
       }
       else{
+        authController.activeSession.value = true;
         authController.userRole.value = "SEEKER";
         Get.offNamed(RouteName.provider_home);
         return;
@@ -83,8 +94,8 @@ class SplashScreen extends GetView<SplashScreenController> {
               ],
             ),
             SizedBox(height: 16,),
-            const Text(
-              'Raithan',
+            Text(
+              'Raithan'.tr,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ],

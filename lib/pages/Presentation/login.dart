@@ -59,8 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _submitPhone(BuildContext context) async {
-    if (_phoneFormKey.currentState?.validate() ?? false) {
+  void _submitPhone(BuildContext context,) async {
+    if (_phoneFormKey.currentState?.validate() ?? false || currentPhase == 1) {
 
       Utils.showBackDropLoading(context);
 
@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Welcome',
+                        'Welcome'.tr,
                         style: robotoNormal.copyWith(
                           color: Colors.white38,
                           fontSize: AppDimensions.largeFontSize
@@ -221,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        'Login',
+                        'Sign In'.tr,
                         style: robotoBold.copyWith(
                           color: white,
                           fontSize: AppDimensions.extraLargeFontSize*1.5,
@@ -230,14 +230,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 5),
                       RichText(
                         text: TextSpan(
-                          text: 'New User? ',
+                          text: 'New User? '.tr,
                           style: robotoNormal.copyWith(
                             color: white,
                             fontSize: AppDimensions.regularFontSize,
                           ),
                           children: [
                             TextSpan(
-                              text: 'Register',
+                              text: ' ${'Sign Up'.tr}',
                               style: robotoBold.copyWith(
                                 color: Colors.blue, // Different color for "Login"
                                 fontSize: AppDimensions.regularFontSize,
@@ -265,14 +265,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           StepItem(
                             stepNumber: 1,
-                            label: 'Phone',
+                            label: 'Phone'.tr,
                             currentPhase: currentPhase,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                           ),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(
                                 top: 25.0,
-                                right: 20,
+                                // right: 20,
                               ),
                               child: currentPhase == 1
                                   ? const DottedLine(
@@ -299,8 +300,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           StepItem(
                             stepNumber: 2,
-                            label: 'OTP',
+                            label: 'OTP'.tr,
                             currentPhase: currentPhase,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                           ),
                         ],
                       ),
@@ -332,6 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             formKey: _phoneFormKey,
                           )
                         : OtpPage(
+                            sentOtp: _submitPhone,
                             phone: _phoneController.text,
                             otpController: _otpController,
                             formKey: _otpFormKey,
@@ -383,12 +386,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               });
                             },
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                  Text(
-                                  'Next',
-                                  style: TextStyle(
+                                  'Next'.tr,
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -420,60 +423,61 @@ class StepItem extends StatelessWidget {
   final int stepNumber;
   final String label;
   final int currentPhase;
+  final CrossAxisAlignment crossAxisAlignment;
 
   const StepItem({
     super.key,
     required this.stepNumber,
     required this.label,
     required this.currentPhase,
+    required this.crossAxisAlignment,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
+  Widget build(BuildContext context ) {
+    return Container(
+      width: 40,
+      child: Column(
+        crossAxisAlignment: crossAxisAlignment,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
             ),
-          ],
-        ),
-        const SizedBox(height: 5),
-        CircleAvatar(
-          radius: 10,
-          backgroundColor:
-              currentPhase <= stepNumber - 1 ? black : Colors.green,
-          child: (currentPhase > stepNumber - 1)
-              ? const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 10,
-                )
-              : (currentPhase == stepNumber - 1)
-                  ? Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.green,
+          ),
+          const SizedBox(height: 5),
+          CircleAvatar(
+            radius: 10,
+            backgroundColor:
+                currentPhase <= stepNumber - 1 ? black : Colors.green,
+            child: (currentPhase > stepNumber - 1)
+                ? const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 10,
+                  )
+                : (currentPhase == stepNumber - 1)
+                    ? Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.green,
+                          ),
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    )
-                  : Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        borderRadius: BorderRadius.circular(100),
                       ),
-                    ),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

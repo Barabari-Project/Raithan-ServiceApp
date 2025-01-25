@@ -7,10 +7,7 @@ import 'package:raithan_serviceapp/Utils/utils.dart';
 import 'package:raithan_serviceapp/common/custom_appbar.dart';
 import 'package:raithan_serviceapp/common/custom_button.dart';
 import 'package:raithan_serviceapp/controller/business_edit_controller.dart';
-import 'package:raithan_serviceapp/controller/profile_controller.dart';
-import 'package:raithan_serviceapp/pages/Presentation/Pages/business.dart';
 
-import '../../../Utils/app_colors.dart';
 import 'businessDetailsPage.dart';
 
 class BusinessEdit extends GetView<BusinessEditController> {
@@ -21,7 +18,7 @@ class BusinessEdit extends GetView<BusinessEditController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar("Edit Business Details", context, options: false),
+      appBar: customAppBar("Edit Business Details".tr, context, options: false),
       body: Obx(
             () => SingleChildScrollView(
           controller: controller.scrollController,
@@ -42,6 +39,7 @@ class BusinessEdit extends GetView<BusinessEditController> {
                               endTimeController: controller.endTimeController,
                               workingDaysController: controller.workingDaysController,
                               workingDays: controller.workingDays,
+                              businessTypeController:controller.businessTypeController,
                               formKey: controller.businessDetailFormKey,
                             ),
                   Padding(
@@ -55,18 +53,17 @@ class BusinessEdit extends GetView<BusinessEditController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:  [
                         CustomButton(
-                          child: Text("Cancel"),
                           isPrimary: false,
                           width: 100,
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
+                          child: Text("Cancel".tr),
                         ),
                         SizedBox(
                           width: AppDimensions.width * 0.03,
                         ),
                         CustomButton(
-                          child: Text("Apply For Verification"),
                           isPrimary: true,
                           width: 200,
                           onPressed: () {
@@ -74,6 +71,7 @@ class BusinessEdit extends GetView<BusinessEditController> {
                           },
                           isLoading:
                           controller.savingBusinessDetails.value,
+                          child: Text("Apply For Verification".tr),
                         )
                       ] ,
                     ),

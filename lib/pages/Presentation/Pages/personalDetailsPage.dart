@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 import 'package:raithan_serviceapp/Widgets/dobInputField.dart';
@@ -54,7 +55,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Personal Details",
+                  "Personal Details".tr,
                   style: robotoBold.copyWith(
                     color: black,
                     fontSize: 20,
@@ -66,7 +67,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
             CustomTextfield(
               controller: widget.firstNameController,
               type: TextInputType.name,
-              label: "First Name",
+              label: "First Name".tr,
               focusNode: widget.firstNameFocusNode,
               onFieldSubmitted: (value) {
                 Utils.changeNodeFocus(
@@ -76,15 +77,15 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your first name';
+                  return 'Please enter your first name'.tr;
                 }
                 if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value))
                   {
-                    return 'First Name should contain only letter and space';
+                    return 'First Name should contain only letter and space'.tr;
                   }
                 else if(value.length <= 2)
                 {
-                  return "First Name length must be greater than 2";
+                  return "First Name length must be greater than 2".tr;
                 }
                 return null;
               },
@@ -93,24 +94,21 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
             CustomTextfield(
               controller: widget.lastNameController,
               type: TextInputType.name,
-              label: "Last Name",
+              label: "Last Name".tr,
               focusNode: widget.lastNameFocusNode,
               onFieldSubmitted: (value) {
-                Utils.changeNodeFocus(
-                    context,
-                    widget.lastNameFocusNode,
-                    widget.dobFocusNode);
+                widget.lastNameFocusNode.unfocus();
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your Last name';
+                  return 'Please enter your Last name'.tr;
                 }
                 if(!RegExp(RegexConstant.nameValidationRegex).hasMatch(value)) {
-                  return 'Last Name should contain only letter and space';
+                  return 'Last Name should contain only letter and space'.tr;
                 }
                 else if(value.length <= 2)
                   {
-                    return "Last Name length must be greater than 2";
+                    return "Last Name length must be greater than 2".tr;
                   }
                 return null;
               },
@@ -127,7 +125,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select your date of birth';
+                  return 'Please select your date of birth'.tr;
                 }
                 return null;
               },
@@ -135,7 +133,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
             sizedBox(),
             DropdownTextField(
               controller: widget.genderController,
-              label: "Select an Gender",
+              label: "Select an Gender".tr,
               focusNode: widget.genderFocusNode,
               onFieldSubmitted: (value) {
                  widget.genderFocusNode.unfocus();
@@ -143,7 +141,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               options: ['Male', 'Female', 'Other'],
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select an option';
+                  return 'Please select an option'.tr;
                 }
                 return null;
               },
@@ -153,7 +151,7 @@ class _PersonalDetailsPageState extends State<PersonalDetailsPage> {
               controller: widget.imageController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select an image';
+                  return 'Please select an image'.tr;
                 }
                 return null;
               },

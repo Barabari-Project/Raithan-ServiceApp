@@ -172,11 +172,15 @@ class ProfileController extends GetxController {
 
          isEditAllowed.value = false;
          Utils.showSnackbar("Yeah !", response?["message"], CustomSnackbarStatus.success);
+         Navigator.of(context).pop();
+
        }  catch (e) {
+         Navigator.of(context).pop();
+
          if (e is Exception) {
            Utils.handleException(e);
          } else {
-           print(e);
+
            Utils.showSnackbar(
                "Oops !",
                "Some Thing Went Wrong Please Try Again Later !",
@@ -184,8 +188,7 @@ class ProfileController extends GetxController {
          }
        }
        finally{
-         // savingProfileDetails.value = false;
-         Navigator.of(context).pop();
+
        }
   }
 

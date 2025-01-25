@@ -17,12 +17,10 @@ import 'package:raithan_serviceapp/constants/enums/custom_snackbar_status.dart';
 import 'package:raithan_serviceapp/constants/routes/route_name.dart';
 import 'package:raithan_serviceapp/constants/storage_keys.dart';
 
-import '../../constants/enums/business_category.dart';
 import '../../controller/auth_controller.dart';
 import '../../dtos/file_with_media_type.dart';
 import '../../network/BaseApiServices.dart';
 import '../../network/NetworkApiService.dart';
-import '../Data/Repository/onboarding_repository.dart';
 import 'Pages/businessDetailsPage.dart';
 import 'Pages/otpPage.dart';
 import 'Pages/personalDetailsPage.dart';
@@ -61,6 +59,7 @@ class _RegistrationState extends State<Registration> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _workingDaysController = TextEditingController();
+  final TextEditingController _businessTypeController = TextEditingController();
 
   final ScrollController scrollController = ScrollController();
 
@@ -107,7 +106,7 @@ class _RegistrationState extends State<Registration> {
   double containerNextButtonHeight = 0;
 
   void _submitPhone(BuildContext context) async {
-    if (_phoneFormKey.currentState?.validate() ?? false) {
+    if (_phoneFormKey.currentState?.validate() ?? false || currentPhase == 1) {
 
       Utils.showBackDropLoading(context);
 
@@ -127,8 +126,9 @@ class _RegistrationState extends State<Registration> {
         Storage.saveValue(StorageKeys.CURRENT_PHASE, "1");
 
         Utils.showSnackbar("Yeah !", response["message"], CustomSnackbarStatus.success);
-
+        Navigator.of(context).pop();
       } catch (e) {
+        Navigator.of(context).pop();
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -138,7 +138,7 @@ class _RegistrationState extends State<Registration> {
                CustomSnackbarStatus.error);
         }
       } finally {
-        Navigator.of(context).pop();
+
       }
     } else {
       Utils.showSnackbar("Almost There!", "Please write valid Phone Number", CustomSnackbarStatus.warning);
@@ -175,7 +175,9 @@ class _RegistrationState extends State<Registration> {
           currentPhase = 2;
         });
         Storage.saveValue(StorageKeys.CURRENT_PHASE, "2");
+        Navigator.of(context).pop();
       } catch (e) {
+        Navigator.of(context).pop();
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -185,7 +187,7 @@ class _RegistrationState extends State<Registration> {
               CustomSnackbarStatus.error);
         }
       } finally {
-        Navigator.of(context).pop();
+
       }
     } else {
 
@@ -226,9 +228,9 @@ class _RegistrationState extends State<Registration> {
           currentPhase = 3;
         });
         Storage.saveValue(StorageKeys.CURRENT_PHASE, "3");
-
+        Navigator.of(context).pop();
       } catch (e) {
-
+        Navigator.of(context).pop();
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -238,7 +240,7 @@ class _RegistrationState extends State<Registration> {
               CustomSnackbarStatus.error);
         }
       } finally {
-        Navigator.of(context).pop();
+
       }
     } else {
 
@@ -266,6 +268,7 @@ class _RegistrationState extends State<Registration> {
       }  catch (e) {
         Utils.showSnackbar("Almost There!", "Please Allow Location Permission",
             CustomSnackbarStatus.warning);
+        Navigator.of(context).pop();
         return;
       }
 
@@ -281,6 +284,7 @@ class _RegistrationState extends State<Registration> {
           "pincode": _pincodeController.text,
           "blockNumber": _blockNumberController.text,
           "street": _streetController.text,
+          'businessType' : _businessTypeController.text,
           "area": _areaController.text,
           "landmark": _landmarkController.text,
           "city": _cityController.text,
@@ -306,15 +310,15 @@ class _RegistrationState extends State<Registration> {
         Utils.showSnackbar(
             "Yeah !", response["message"], CustomSnackbarStatus.success);
 
-
         AuthController authController = Get.find();
         authController.activeSession.value = true;
         authController.userRole.value = "PROVIDER";
         Storage.removeKey(StorageKeys.CURRENT_PHASE);
-        Get.offNamed(RouteName.provider_home);
+        Get.offAllNamed(RouteName.provider_home);
 
       } catch (e) {
 
+        print(e);
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -379,6 +383,7 @@ class _RegistrationState extends State<Registration> {
     _workingDaysController.dispose();
     _startTimeController.dispose();
     _endTimeController.dispose();
+    _businessTypeController.dispose();
 
     scrollController.dispose();
 
@@ -437,6 +442,7 @@ class _RegistrationState extends State<Registration> {
       currentPage = OtpPage(
           phone: _phoneController.text,
           otpController: _otpController,
+          sentOtp : _submitPhone,
           formKey: _otpFormKey);
     } else if (currentPhase == 2) {
       currentPage = PersonalDetailsPage(
@@ -458,6 +464,7 @@ class _RegistrationState extends State<Registration> {
         cityController: _cityController,
         stateController: _stateController,
         startTimeController: _startTimeController,
+        businessTypeController: _businessTypeController,
         // New parameter
         endTimeController: _endTimeController,
         workingDaysController: _workingDaysController,
@@ -487,14 +494,14 @@ class _RegistrationState extends State<Registration> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Welcome',
+                          'Welcome'.tr,
                           style: robotoNormal.copyWith(
                               color: Colors.white38,
                               fontSize: AppDimensions.largeFontSize),
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          'Register',
+                          'Sign Up'.tr,
                           style: robotoBold.copyWith(
                             color: white,
                             fontSize: AppDimensions.extraLargeFontSize*1.5,
@@ -503,14 +510,14 @@ class _RegistrationState extends State<Registration> {
                         const SizedBox(height: 5),
                         RichText(
                           text: TextSpan(
-                            text: 'Already Registered? ',
+                            text: 'Already Registered? '.tr,
                             style: robotoNormal.copyWith(
                               color: white,
                               fontSize: AppDimensions.regularFontSize,
                             ),
                             children: [
                               TextSpan(
-                                text: 'Login',
+                                text: 'Sign In'.tr,
                                 style: robotoBold.copyWith(
                                   color: Colors.blue,
                                   // Different color for "Login"
@@ -533,33 +540,33 @@ class _RegistrationState extends State<Registration> {
                         ),
                         const SizedBox(height: 30),
                         // Stepper Section
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             StepItemText(
                               stepNumber: 1,
-                              label: 'Phone  ',
+                              label: "Phone  ".tr,
                             ),
-                            Expanded(
+                            const Expanded(
                               child: SizedBox(),
                             ),
                             StepItemText(
                               stepNumber: 2,
-                              label: ' OTP  ',
+                              label: ' OTP  '.tr,
                             ),
-                            Expanded(
+                            const Expanded(
                               child: SizedBox(),
                             ),
                             StepItemText(
                               stepNumber: 3,
-                              label: '   Profile',
+                              label: '   Profile'.tr,
                             ),
-                            Expanded(
+                            const Expanded(
                               child: SizedBox(),
                             ),
                             StepItemText(
                               stepNumber: 4,
-                              label: 'Business',
+                              label: 'Business'.tr,
                             ),
                           ],
                         ),
@@ -568,7 +575,7 @@ class _RegistrationState extends State<Registration> {
                           children: [
                             StepItem(
                               stepNumber: 1,
-                              label: 'Phone',
+                              label: 'Phone'.tr,
                               currentPhase: currentPhase,
                             ),
                             Expanded(
@@ -580,7 +587,7 @@ class _RegistrationState extends State<Registration> {
                             ),
                             StepItem(
                               stepNumber: 2,
-                              label: 'OTP',
+                              label: 'OTP'.tr,
                               currentPhase: currentPhase,
                             ),
                             Expanded(
@@ -647,7 +654,7 @@ class _RegistrationState extends State<Registration> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Back Button
-                      if (currentPhase == 1)
+                      if (currentPhase == 1 || currentPhase == 2 || currentPhase == 3)
                         Container(
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
@@ -657,7 +664,7 @@ class _RegistrationState extends State<Registration> {
                           child: IconButton(
                             onPressed: () {
                               setState(() {
-                                if (currentPhase > 0) currentPhase -= 1;
+                                currentPhase = 0;
                               });
                             },
                             icon: const Icon(Icons.arrow_back),
@@ -686,19 +693,19 @@ class _RegistrationState extends State<Registration> {
                                 }
                               });
                             },
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Next',
-                                  style: TextStyle(
+                                  'Next'.tr,
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                SizedBox(width: 5,),
-                                Icon(Icons.arrow_forward,size: 22,color: Colors.black,weight: 1,)
+                                const SizedBox(width: 5,),
+                                const Icon(Icons.arrow_forward,size: 22,color: Colors.black,weight: 1,)
                               ],
                             ),
                           ),

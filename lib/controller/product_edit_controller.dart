@@ -73,6 +73,7 @@ class ProductEditController extends GetxController {
            }
          }
        } else {
+         productListController.noProducts.value = false;
          harvestorDetails.add(HarvestorDetails.fromJson(productDetails));
        }
      } catch (e) {
@@ -226,7 +227,11 @@ class ProductEditController extends GetxController {
         Utils.showSnackbar(
             "Yeah !", response?["message"], CustomSnackbarStatus.success);
         Navigator.of(context).pop();
+        savingProductDetails.value = false;
+        Navigator.of(context).pop();
       } catch (e) {
+        savingProductDetails.value = false;
+        Navigator.of(context).pop();
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -236,8 +241,7 @@ class ProductEditController extends GetxController {
               CustomSnackbarStatus.error);
         }
       } finally {
-        savingProductDetails.value = false;
-        Navigator.of(context).pop();
+
       }
     } else {
       Utils.showSnackbar("Almost There!", "Please write valid details",

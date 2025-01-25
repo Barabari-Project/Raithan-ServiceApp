@@ -15,7 +15,7 @@ class ProviderHome extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar("Raithan", context),
+      appBar: customAppBar("Raithan".tr, context),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(AppDimensions.formFieldPadding),
@@ -25,7 +25,7 @@ class ProviderHome extends GetView<ProfileController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Business Categories",
+                    "Business Categories".tr,
                     style: TextStyle(
                       fontSize: AppDimensions.largeFontSize,
                       fontWeight: FontWeight.bold,
@@ -168,7 +168,7 @@ class CategoryWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  text,
+                  text.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

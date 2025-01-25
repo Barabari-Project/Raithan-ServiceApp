@@ -1,4 +1,6 @@
 
+import 'package:get/get.dart';
+
 class HarvestorDetails {
   final List<String> images;
   final Map<String,String> imageWithTitle;
@@ -6,8 +8,11 @@ class HarvestorDetails {
   final String modelNo;
   final String type;
   final ProductStatus verificationStatus;
-  final double avgRating;
+  RxDouble avgRating;
   final String id;
+  final String? mobileNumber;
+  final String? serviceProviderId;
+
 
   HarvestorDetails({
     required this.images,
@@ -17,7 +22,9 @@ class HarvestorDetails {
     required this.verificationStatus,
     required this.avgRating,
     required this.imageWithTitle,
-    required this.id
+    required this.id,
+    required this.mobileNumber,
+    required this.serviceProviderId
   });
 
   factory HarvestorDetails.fromJson(Map<String, dynamic> json) {
@@ -28,8 +35,10 @@ class HarvestorDetails {
       modelNo: json['modelNo'],
       type: json['type'] ?? 'Not-Defined',
       verificationStatus: ProductStatus.fromJson({'status': json['verificationStatus']}),
-      avgRating: (json['avgRating'] as num).toDouble(),
-      id : json['_id']
+      avgRating: (json['avgRating'] as num).toDouble().obs,
+      id : json['_id'],
+      mobileNumber: json["business"] != null && json["business"] is Map && json["business"]["mobileNumber"] != null ? json["business"]["mobileNumber"] : null,
+      serviceProviderId: json["business"] != null && json["business"] is Map && json["business"]["serviceProvider"] != null ? json["business"]["serviceProvider"] : null
     );
   }
 }

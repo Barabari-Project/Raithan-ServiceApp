@@ -19,7 +19,7 @@ class Profile extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar("Profile", context, options: false),
+      appBar: customAppBar("Profile".tr, context, options: false),
       body: Obx(
         () => SingleChildScrollView(
           controller: controller.scrollController,
@@ -79,8 +79,6 @@ class Profile extends GetView<ProfileController> {
                                 bottom: -15,
                                 child: GestureDetector(
                                   onTap: () {
-                                    // Handle edit action
-                                    print('Edit profile clicked!');
                                     controller.pickImage();
                                   },
                                   child: Container(
@@ -113,9 +111,9 @@ class Profile extends GetView<ProfileController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'First Name *',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Text(
+                                'First Name'.tr,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
                               TextFormField(
@@ -123,20 +121,20 @@ class Profile extends GetView<ProfileController> {
                                 controller: controller.firstNameController,
                                 focusNode: controller.firstNameFocusNode,
                                 decoration: InputDecoration(
-                                  hintText: 'First Name',
+                                  hintText: 'First Name'.tr,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your first name';
+                                    return 'Please enter your first name'.tr;
                                   }
                                   if (!RegExp(RegexConstant.nameValidationRegex)
                                       .hasMatch(value)) {
-                                    return 'First Name should contain only letter and space';
+                                    return 'First Name should contain only letter and space'.tr;
                                   } else if (value.length <= 2) {
-                                    return "First Name length must be greater than 2";
+                                    return "First Name length must be greater than 2".tr;
                                   }
                                   return null;
                                 },
@@ -148,8 +146,8 @@ class Profile extends GetView<ProfileController> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text(
-                                'Last Name *',
+                              Text(
+                                'Last Name'.tr,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
@@ -158,20 +156,20 @@ class Profile extends GetView<ProfileController> {
                                 controller: controller.lastNameController,
                                 focusNode: controller.lastNameFocusNode,
                                 decoration: InputDecoration(
-                                  hintText: 'Last Name',
+                                  hintText: 'Last Name'.tr,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your first name';
+                                    return 'Please enter your Last name'.tr;
                                   }
                                   if (!RegExp(RegexConstant.nameValidationRegex)
                                       .hasMatch(value)) {
-                                    return 'First Name should contain only letter and space';
+                                    return 'Last Name should contain only letter and space'.tr;
                                   } else if (value.length <= 2) {
-                                    return "First Name length must be greater than 2";
+                                    return "Last Name length must be greater than 2".tr;
                                   }
                                   return null;
                                 },
@@ -183,8 +181,8 @@ class Profile extends GetView<ProfileController> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text(
-                                'Birth Year *',
+                              Text(
+                                'Birth Year'.tr,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
@@ -199,7 +197,7 @@ class Profile extends GetView<ProfileController> {
                                   }
                                 },
                                 decoration: InputDecoration(
-                                  hintText: 'Birth Year',
+                                  hintText: 'Birth Year'.tr,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -212,9 +210,9 @@ class Profile extends GetView<ProfileController> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text(
-                                'Gender',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Text(
+                                'Gender'.tr,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
                               DropdownMenu(
@@ -243,7 +241,7 @@ class Profile extends GetView<ProfileController> {
                                     .map<DropdownMenuEntry<String>>(
                                         (String gender) {
                                   return DropdownMenuEntry<String>(
-                                    label: gender,
+                                    label: gender.tr,
                                     value: gender,
                                   );
                                 }).toList(),
@@ -265,18 +263,17 @@ class Profile extends GetView<ProfileController> {
                         children: controller.isEditAllowed.value
                             ? [
                                 CustomButton(
-                                  child: Text("Cancel"),
                                   isPrimary: false,
                                   width: 100,
                                   onPressed: () {
                                     controller.isEditAllowed.value = false;
                                   },
+                                  child: Text("Cancel".tr),
                                 ),
                                 SizedBox(
                                   width: AppDimensions.width * 0.03,
                                 ),
                                 CustomButton(
-                                  child: Text("Apply For Verification"),
                                   isPrimary: true,
                                   width: 200,
                                   onPressed: () {
@@ -284,27 +281,37 @@ class Profile extends GetView<ProfileController> {
                                   },
                                   isLoading:
                                       controller.savingProfileDetails.value,
+                                  child: Text("Apply For Verification".tr),
                                 )
                               ]
                             : [
-                                CustomButton(
-                                    isPrimary: true,
-                                    width: 100,
+                                FilledButton(
                                     onPressed: () {
                                       controller.isEditAllowed.value = true;
                                     },
-                                    child: const Row(
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStateProperty.all<Color>(AppColors.appBarColor), // Set your custom background color
+                                      padding: WidgetStateProperty.all<EdgeInsets>(
+                                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Adjust padding if needed
+                                      ),
+                                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12), // Add rounded corners
+                                        ),
+                                      ),
+                                    ),
+                                    child:  Row(
                                       children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.edit,
                                           color: AppColors.whiteColor,
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                         Text(
-                                          "Edit",
-                                          style: TextStyle(
+                                          "Edit".tr,
+                                          style: const TextStyle(
                                               color: AppColors.whiteColor),
                                         ),
                                       ],

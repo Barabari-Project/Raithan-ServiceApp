@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
-class DropdownTextField extends StatefulWidget {
+class FilterDropDown extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final List<String> options;
@@ -11,28 +10,35 @@ class DropdownTextField extends StatefulWidget {
   final void Function(String)? onChanged;
   final FocusNode? focusNode;
   void Function(String)? onFieldSubmitted;
-  final TextEditingController readPurposeController = new TextEditingController();
+  bool makeBigLabelSize = false;
 
-  DropdownTextField({
-    super.key,
-    required this.controller,
-    required this.label,
-    required this.options,
-    this.validator,
-    this.onChanged,
-    this.focusNode,
-    this.onFieldSubmitted
-  }){
-    readPurposeController.value = new TextEditingValue(text: controller.text.tr);
-  }
+  FilterDropDown(
+      {super.key,
+      required this.controller,
+      required this.label,
+      required this.options,
+      this.validator,
+      this.onChanged,
+      this.focusNode,
+      this.onFieldSubmitted});
 
   @override
-  State<DropdownTextField> createState() => _DropdownTextFieldState();
+  State<FilterDropDown> createState() => _FilterDropDown();
 }
 
-class _DropdownTextFieldState extends State<DropdownTextField> {
+class _FilterDropDown extends State<FilterDropDown> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.controller.text != "")
+      {
+        widget.makeBigLabelSize = true;
+      }
+  }
 
   void _showDropdown() {
     _overlayEntry = _createOverlayEntry();
@@ -74,11 +80,12 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
               children: widget.options
                   .map(
                     (option) => ListTile(
-                      title: Text(option.tr),
+                      title: Text(option),
                       onTap: () {
                         setState(() {
-                          widget.controller.value = TextEditingValue(text: option);
-                          widget.readPurposeController.value = TextEditingValue(text: option.tr);
+                          widget.controller.value =
+                              TextEditingValue(text: option);
+                          widget.onChanged!(option);
                         });
                         _hideDropdown();
                       },
@@ -98,35 +105,44 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
       link: _layerLink,
       child: TextFormField(
         onChanged: widget.onChanged,
-        controller: widget.readPurposeController,
+        controller: widget.controller,
         focusNode: widget.focusNode,
         readOnly: true, // Prevent manual text editing
         decoration: InputDecoration(
-          labelText: widget.label,
-          labelStyle:
-              Theme.of(context).textTheme.titleSmall!.copyWith(color: grey),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: borderGrey,
+          isDense: true, // Compact design
+          // labelText: widget.label,
+          label: Text(widget.label,style: TextStyle(fontSize: widget.makeBigLabelSize ? 18 : 15),),
+          labelStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.grey[600]),
+          filled: true, // Enable background color
+          fillColor: Colors.grey[200], // Light background color
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.green), // Remove border
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: borderDarkGrey,
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.green),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: borderGrey,
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.red),
           ),
-          suffixIcon: const Icon(Icons.arrow_drop_down, color: grey),
+          suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Adjust padding
         ),
         validator: widget.validator,
         onTap: () {
           if (_overlayEntry == null) {
+            setState(() { widget.makeBigLabelSize = true; });
             _showDropdown();
           } else {
             _hideDropdown();
           }
         },
+        style: TextStyle(
+          fontSize: 16, // Adjust font size
+          color: Colors.black, // Text color
+        ),
       ),
     );
   }

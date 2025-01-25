@@ -2,7 +2,7 @@
 class APIConstants{
 
    static const String baseUrl = "https://backend.barabaricollective.org";
-   // static const String baseUrl = "https://ba36-2406-b400-d11-789e-1017-6d6b-203f-6296.ngrok-free.app";
+   // static const String baseUrl = "https://cc60-2406-b400-d11-33ad-5cde-919c-64b1-e917.ngrok-free.app";
 
    static const String providerSentOTP = "/raithan/api/service-providers/onboard/user/mobile";
 
@@ -35,5 +35,15 @@ class APIConstants{
    static const String saveLaborDetails = "/raithan/api/products/create/labour-mechanics";
 
    static const String editLaborDetails = "/raithan/api/products/update/labour-mechanics";
+
+   static const String seekerGetProductsDetails = "/raithan/api/service-seekers/get-products";
+
+   static const String seekerLoginSentOTP = "/raithan/api/service-seekers/login";
+
+   static const String seekerLoginVerifyOTP = "/raithan/api/service-seekers/login/verify-otp";
+
+   static const String seekerCallEvent = "/raithan/api/service-seekers/call-event";
+
+   static const String seekerRating = "/raithan/api/products/rating";
 
 }

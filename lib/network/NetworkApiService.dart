@@ -128,7 +128,7 @@ class NetworkApiService extends BaseApiServices {
 
       // Send the request
       http.StreamedResponse response = await request.send();
-
+      print(response.statusCode);
       responseJson = jsonDecode(await response.stream.bytesToString());
 
 

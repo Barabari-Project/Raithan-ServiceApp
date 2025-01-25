@@ -20,7 +20,7 @@ class LaborEdit extends GetView<LaborEditController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-          customAppBar(controller.businessType.value, context, options: false),
+          customAppBar(controller.businessType.value.tr, context, options: false),
       body: Obx(
         () => SingleChildScrollView(
             controller: controller.scrollController,
@@ -39,7 +39,7 @@ class LaborEdit extends GetView<LaborEditController> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    controller.businessType.value + " Details",
+                                    controller.businessType.value.tr + " ${'Details'.tr}",
                                     style: robotoBold.copyWith(
                                       color: black,
                                       fontSize: 20,
@@ -53,9 +53,9 @@ class LaborEdit extends GetView<LaborEditController> {
                                     horizontal: AppDimensions.formFieldPadding * 0.5),
                                 child: CheckboxListTile(
                                   contentPadding: EdgeInsets.zero,
-                                  title: const Text(
-                                    'Ready To Travel In 10Km',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  title:  Text(
+                                    'Ready to travel within 10 km'.tr,
+                                    style:const  TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   value: controller.readyToTravelIn10Km.value,
                                   onChanged: (bool? value) {
@@ -69,7 +69,7 @@ class LaborEdit extends GetView<LaborEditController> {
                                 child: CheckboxListTile(
                                   contentPadding: EdgeInsets.zero,
                                   title: Text(
-                                    'Is Individual Person',
+                                    'Individual Worker'.tr,
                                     style:
                                     const TextStyle(fontWeight: FontWeight.bold),
                                   ),
@@ -92,15 +92,15 @@ class LaborEdit extends GetView<LaborEditController> {
                                       if(!controller.isIndividual.value) {
                                         if(value == null || value.isEmpty)
                                           {
-                                            return "Please write number of workers";
+                                            return "Please write number of workers".tr;
                                           }
                                         else if (int.tryParse(value) == null) {
-                                          return "Please enter a valid number";
+                                          return "Please enter a valid number".tr;
                                         }
                                       }
                                     },
                                     controller: controller.numberOfWorkers,
-                                    label: "No of Workers"),
+                                    label: "No of Workers".tr),
                               if (!controller.isIndividual.value) sizedBox(),
                               CustomTextfield(
                                   focusNode: controller.shramCardNumberFocusNode,
@@ -108,13 +108,13 @@ class LaborEdit extends GetView<LaborEditController> {
                                   type: TextInputType.number,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return "Please enter your Shram Card Number";
+                                      return "Please enter your Shram Card Number".tr;
                                     }
                                     if (value.length != 12) {
-                                      return "Shram Card Number must be 12 digits long";
+                                      return "Shram Card Number must be 12 digits long".tr;
                                     }
                                     if (int.tryParse(value) == null) {
-                                      return "Shram Card Number must be a valid number";
+                                      return "Shram Card Number must be a valid number".tr;
                                     }
                                     return null; // No errors
                                   },
@@ -123,16 +123,16 @@ class LaborEdit extends GetView<LaborEditController> {
                                     Utils.changeNodeFocus(context, controller.shramCardNumberFocusNode, controller.serviceTypeFocusNode);
                                   },
                                   controller: controller.shramCardNumber,
-                                  label: "Shram Card Number"),
+                                  label: "Shram Card Number".tr),
                               sizedBox(),
                               MultipleOptionInputField(
                                   focusNode: controller.serviceTypeFocusNode,
-                                  title: "Select ${controller.businessType} Service Type",
+                                  title: "${'Select'.tr} ${controller.businessType.value.tr} ${'Service Type'.tr}",
                                   categories: controller.serviceTypes),
                               sizedBox(),
                               CustomImageField(
                                   controller: controller.shramCardController,
-                                  title: "Shram Card Image"),
+                                  title: "Shram Card Image".tr),
                             ],
                           ),
                           sizedBox(),
@@ -142,7 +142,7 @@ class LaborEdit extends GetView<LaborEditController> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children:  [
                               CustomButton(
-                                child: Text("Cancel"),
+                                child: Text("Cancel".tr),
                                 isPrimary: false,
                                 width: 100,
                                 onPressed: () {
@@ -153,7 +153,7 @@ class LaborEdit extends GetView<LaborEditController> {
                                 width: AppDimensions.width * 0.03,
                               ),
                               CustomButton(
-                                child: Text("Apply For Verification"),
+                                child: Text("Apply For Verification".tr),
                                 isPrimary: true,
                                 width: 200,
                                 onPressed: () {

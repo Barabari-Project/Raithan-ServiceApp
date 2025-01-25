@@ -109,6 +109,7 @@ class LaborEditController extends GetxController {
           }
         }
       } else {
+        productListController.noProducts.value = false;
         agricultureLaborItems.add(AgricultureLabor.fromJson(laborDetails));
       }
     } catch (e) {
@@ -173,8 +174,10 @@ class LaborEditController extends GetxController {
         setEditedLaborDetails(response!["product"]);
         Utils.showSnackbar("Yeah !", response?["message"], CustomSnackbarStatus.success);
         Navigator.of(context).pop();
+        Navigator.of(context).pop();
 
       } catch (e) {
+        Navigator.of(context).pop();
         if (e is Exception) {
           Utils.handleException(e);
         } else {
@@ -184,7 +187,7 @@ class LaborEditController extends GetxController {
               CustomSnackbarStatus.error);
         }
       } finally {
-         Navigator.of(context).pop();
+
       }
     } else {
       Utils.showSnackbar("Almost There!", "Please write valid details",

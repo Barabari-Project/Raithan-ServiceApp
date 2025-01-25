@@ -24,7 +24,7 @@ class ProductEdit extends GetView<ProductEditController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-      customAppBar(controller.businessType.value, context, options: false),
+      customAppBar(controller.businessType.value.tr, context, options: false),
       body: Obx(
             () => SingleChildScrollView(
             controller: controller.scrollController,
@@ -43,7 +43,7 @@ class ProductEdit extends GetView<ProductEditController> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              controller.businessType.value + " Details",
+                              controller.businessType.value.tr + " ${'Details'.tr}",
                               style: robotoBold.copyWith(
                                 color: black,
                                 fontSize: 20,
@@ -56,7 +56,7 @@ class ProductEdit extends GetView<ProductEditController> {
                             type: TextInputType.text,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Please write Model Number";
+                                return "Please write Model Number".tr;
                               }
                               return null; // No errors
                             },
@@ -76,7 +76,7 @@ class ProductEdit extends GetView<ProductEditController> {
                               }
                               },
                             controller: controller.modelNoController,
-                            label: "Model No"),
+                            label: "Model No".tr),
                         sizedBox(),
                         if(controller.businessType.value != BusinessCategory.DRONES.name)
                         CustomTextfield(
@@ -84,10 +84,10 @@ class ProductEdit extends GetView<ProductEditController> {
                             type: TextInputType.number,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Please write horse power";
+                                return "Please write horse power".tr;
                               }
                               if (int.tryParse(value) == null) {
-                                return "Horse power must be a valid number";
+                                return "Horse power must be a valid number".tr;
                               }
                               return null; // No errors
                             },
@@ -101,7 +101,7 @@ class ProductEdit extends GetView<ProductEditController> {
                                  }
                             },
                             controller: controller.hpController,
-                            label: "Horse Power"),
+                            label: "Horse Power".tr),
                         if(controller.businessType.value != BusinessCategory.DRONES.name)
                         sizedBox(),
                         if(controller.businessType.value == BusinessCategory.HARVESTORS.name
@@ -109,7 +109,7 @@ class ProductEdit extends GetView<ProductEditController> {
                          || controller.businessType.value == BusinessCategory.DRONES.name)
                         DropdownTextField(
                           controller: controller.typeController,
-                          label: "Select an ${controller.businessType} Type",
+                          label: "${'Select an'.tr} ${controller.businessType.value.tr} ${'Type'.tr}",
                           focusNode: controller.typeFocusNode,
                           onFieldSubmitted: (value) {
                             controller.typeFocusNode.unfocus();
@@ -120,7 +120,7 @@ class ProductEdit extends GetView<ProductEditController> {
                           ,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select an option';
+                              return 'Please select an option'.tr;
                             }
                             return null;
                           },
@@ -131,30 +131,30 @@ class ProductEdit extends GetView<ProductEditController> {
                         sizedBox(),
                         CustomImageField(
                             controller: controller.frontViewImageController,
-                            title: "Front View Image"),
+                            title: "Front View Image".tr),
                         sizedBox(),
                         CustomImageField(
                             controller: controller.leftViewImageController,
-                            title: "Left View Image"),
+                            title: "Left View Image".tr),
                         sizedBox(),
                         CustomImageField(
                             controller: controller.backViewImageController,
-                            title: "Back View Image"),
+                            title: "Back View Image".tr),
                         sizedBox(),
                         CustomImageField(
                             controller: controller.rightViewImageController,
-                            title: "Right View Image"),
+                            title: "Right View Image".tr),
                         sizedBox(),
                         CustomImageField(
                             controller: controller.rcBookImageController,
-                            title: controller.businessType.value == BusinessCategory.DRONES.name  ?  "Drone Bill Image" : "RC Book Image"
+                            title: controller.businessType.value == BusinessCategory.DRONES.name  ?  "Drone Bill Image".tr : "RC Book Image".tr
 
                         ),
                         sizedBox(),
                         if(controller.businessType.value != BusinessCategory.DRONES.name)
                         CustomImageField(
                             controller: controller.drivingLicenseImageController,
-                            title: "Driving License Image"),
+                            title: "Driving License Image".tr),
                       ],
                     ),
                     sizedBox(),
@@ -164,7 +164,7 @@ class ProductEdit extends GetView<ProductEditController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:  [
                         CustomButton(
-                          child: Text("Cancel"),
+                          child: Text("Cancel".tr),
                           isPrimary: false,
                           width: 100,
                           onPressed: () {
@@ -175,7 +175,7 @@ class ProductEdit extends GetView<ProductEditController> {
                           width: AppDimensions.width * 0.03,
                         ),
                         CustomButton(
-                          child: Text("Apply For Verification"),
+                          child: Text("Apply For Verification".tr),
                           isPrimary: true,
                           width: 200,
                           onPressed: () {

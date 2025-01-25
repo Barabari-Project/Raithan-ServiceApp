@@ -64,8 +64,8 @@ class BusinessController extends GetxController {
       barrierDismissible: false, // Prevents dismissal by tapping outside the dialog
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Update Location'),
-          content: Text('Do you want to change business location?'), // Question to ask
+          title: Text('Update Location'.tr),
+          content: Text('updateLocationConfirmationText'.tr), // Question to ask
           actions: <Widget>[
             // "Yes" button
             TextButton(
@@ -73,14 +73,14 @@ class BusinessController extends GetxController {
                 updateLocation = false;
                 Navigator.of(context).pop(false);
               },
-              child: Text('No'),
+              child: Text('No'.tr),
             ),
             // "No" button
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: Text('Yes'),
+              child: Text('Yes'.tr),
             ),
           ],
         );
@@ -106,6 +106,7 @@ class BusinessController extends GetxController {
     } catch (e) {
       Utils.showSnackbar("Almost There!", "Please Allow Location Permission",
           CustomSnackbarStatus.warning);
+      Navigator.of(context).pop();
       return;
     }
 
@@ -128,8 +129,14 @@ class BusinessController extends GetxController {
           response["message"],
           CustomSnackbarStatus.success);
 
+      if(context.mounted){
+        Navigator.of(context).pop();
+      }
     }
     catch (e) {
+      if(context.mounted){
+        Navigator.of(context).pop();
+      }
       if (e is Exception) {
 
         Utils.handleException(e);
@@ -140,11 +147,7 @@ class BusinessController extends GetxController {
             CustomSnackbarStatus.error);
       }
     }
-    finally{
-       if(context.mounted){
-         Navigator.of(context).pop();
-       }
-    }
+
   }
 
   void setBusinessDetails(dynamic response)
@@ -164,14 +167,16 @@ class BusinessController extends GetxController {
 
 
         businessDetails  = {
-          'Business Name': response["business"]["businessName"]};
+          'Business Name': response["business"]["businessName"],
+          'Business Type' : response["business"]["businessType"]
+         };
 
         categories = List<String>.from(response["business"]["category"]);
 
         if(categories.isEmpty)
           {
-            categories.add("No products have been added yet, ");
-            categories.add("so no categories are available.");
+            categories.add("No products have been added yet, ".tr);
+            categories.add("so no categories are available.".tr);
           }
 
         businessAddress = {   'Block Number': response["business"]["blockNumber"],
