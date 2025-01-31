@@ -104,14 +104,16 @@ class ProductList extends GetView<ProductListController> {
                 // FilterScreen(),
                 controller.noProducts.value
                     ? Expanded(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/images/no_product.png',
-                                width: AppDimensions.width*0.6,
-                              ),
-                              Text("No Products".tr, style: const TextStyle(fontSize: AppDimensions.largeFontSize*1.5),)
-                            ]),
+                        child: Center(
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/images/no_product.png',
+                                  width: AppDimensions.width*0.6,
+                                ),
+                                Text("No Products".tr, style: const TextStyle(fontSize: AppDimensions.largeFontSize*1.5),)
+                              ]),
+                        ),
                       )
                     : Expanded(
                         child: SingleChildScrollView(

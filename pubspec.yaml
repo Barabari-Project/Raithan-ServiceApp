@@ -53,6 +53,8 @@ dependencies:
   widget_zoom: ^0.0.4
   flutter_cache_manager: ^3.4.1
   url_launcher: ^6.3.1
+  firebase_core: ^3.10.1
+  firebase_auth: ^5.4.1
 
 
 

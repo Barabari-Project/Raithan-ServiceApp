@@ -160,8 +160,8 @@ class ProductListController extends GetxController {
 
     AuthController authController = Get.find();
 
-    latitude = 23.025141;
-    longitude = 72.542791;
+    // latitude = 23.025141;
+    // longitude = 72.542791;
 
     Map<String, Object> requestBody = {
       'lat': latitude,

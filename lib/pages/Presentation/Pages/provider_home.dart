@@ -26,7 +26,7 @@ class ProviderHome extends GetView<ProfileController> {
                 children: [
                   Text(
                     "Business Categories".tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: AppDimensions.largeFontSize,
                       fontWeight: FontWeight.bold,
                     ),
