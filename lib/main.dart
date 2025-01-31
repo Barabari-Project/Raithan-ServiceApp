@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/login.dart';
-import 'package:raithan_serviceapp/Onboarding/Presentation/registration.dart';
+import 'package:get/get.dart';
+import 'package:raithan_serviceapp/Utils/storage.dart';
+import 'package:raithan_serviceapp/constants/enums/language_enum.dart';
+import 'package:raithan_serviceapp/constants/storage_keys.dart';
+import 'package:raithan_serviceapp/getx_localization/languages.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+import 'Utils/app_style.dart';
+import 'constants/routes/app_route.dart';
+import 'controller/auth_controller.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Raithan ServiceApp',
+void main() async {
+  Get.put(AuthController());
+  String language = await Storage.getValue(StorageKeys.LANGUAGE) ?? "en";
+  runApp(
+    SafeArea(child: GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      locale: Locale(language),
+      fallbackLocale: Locale(LanguageEnum.en.name),
+      getPages: AppRoutes.appRoutes(),
+      translations: Languages(),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const Registration(),
-    );
-  }
+          fontFamily: "Poppins",
+          colorScheme:
+          ColorScheme.fromSeed(seedColor: black),
+          appBarTheme:
+          const AppBarTheme(backgroundColor: black),
+          useMaterial3: true),
+    ),
+    )
+  );
 }

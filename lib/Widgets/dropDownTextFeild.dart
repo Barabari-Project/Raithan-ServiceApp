@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:raithan_serviceapp/Utils/app_dimensions.dart';
 import 'package:raithan_serviceapp/Utils/app_style.dart';
 
 class DropdownTextField extends StatefulWidget {
@@ -6,14 +8,23 @@ class DropdownTextField extends StatefulWidget {
   final String label;
   final List<String> options;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
+  final FocusNode? focusNode;
+  void Function(String)? onFieldSubmitted;
+  final TextEditingController readPurposeController = new TextEditingController();
 
-  const DropdownTextField({
+  DropdownTextField({
     super.key,
     required this.controller,
     required this.label,
     required this.options,
     this.validator,
-  });
+    this.onChanged,
+    this.focusNode,
+    this.onFieldSubmitted
+  }){
+    readPurposeController.value = new TextEditingValue(text: controller.text.tr);
+  }
 
   @override
   State<DropdownTextField> createState() => _DropdownTextFieldState();
@@ -38,10 +49,17 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
     final Size size = renderBox.size;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
 
+    double dropdownTop = offset.dy + size.height + 5;
+
+    // Check if the dropdown would overflow the screen and adjust the position
+    if (dropdownTop + 200 > AppDimensions.height) {
+      dropdownTop = offset.dy - 5 - 200; // Show above the field if below screen
+    }
+
     return OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx,
-        top: offset.dy + size.height + 5,
+        top: dropdownTop,
         width: size.width,
         child: CompositedTransformFollower(
           link: _layerLink,
@@ -56,10 +74,11 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
               children: widget.options
                   .map(
                     (option) => ListTile(
-                      title: Text(option),
+                      title: Text(option.tr),
                       onTap: () {
                         setState(() {
-                          widget.controller.text = option;
+                          widget.controller.value = TextEditingValue(text: option);
+                          widget.readPurposeController.value = TextEditingValue(text: option.tr);
                         });
                         _hideDropdown();
                       },
@@ -78,7 +97,9 @@ class _DropdownTextFieldState extends State<DropdownTextField> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: TextFormField(
-        controller: widget.controller,
+        onChanged: widget.onChanged,
+        controller: widget.readPurposeController,
+        focusNode: widget.focusNode,
         readOnly: true, // Prevent manual text editing
         decoration: InputDecoration(
           labelText: widget.label,

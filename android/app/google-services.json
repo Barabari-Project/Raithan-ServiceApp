@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "890124867374",
+    "project_id": "otp-verification-63633",
+    "storage_bucket": "otp-verification-63633.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890124867374:android:bcdd03be36609787db4cbf",
+        "android_client_info": {
+          "package_name": "com.example.raithan_serviceapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcCbcAgoe2lQ-GMZ_z3BEb0elZ-3WqVck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
